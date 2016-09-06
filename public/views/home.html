@@ -1,0 +1,14 @@
+<div ng-if="mainOptions.homePage == 0">
+  <div ng-if="mainOptions.homeBanner == 1">
+    <banner selectClass="featureSelect" transition="true"></banner>
+  </div>
+  <div class="custom-container" layout="column" flex="100" layout-align="center" layout-padding>
+    <div layout="row" layout-sm="column" layout-xs="column">
+      <topics flex="100" flex-gt-sm="75" title="ReMark News" box="50" channel="ReMark" length="150" excerpt="false"></topics>
+      <topics flex="100" flex-gt-sm="25" title="Features" box="100" channel="Featured" length="75" excerpt="true"></topics>
+    </div>
+    <div layout="row" layout-sm="column" layout-xs="column">
+      <topics flex="100" title="Guides" box="33" channel="Guides" excerpt="false"></topics>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+<div class="{{detailStatsClass}}" layout-margin>
+  <span ng-if="authenticated != true" ng-click="authDialog()" class="statOption">
+    <md-icon class="material-icons">favorite_border</md-icon>
+    <span class="{{statsTextClass}}">{{topic.topicVotes}}</span>
+  </span>
+  <span ng-if="authenticated == true" ng-click="voteTopic(topic.id)" class="statOption">
+    <md-icon class="material-icons">favorite_border</md-icon>
+    <span class="{{statsTextClass}}">{{topic.topicVotes}}</span>
+  </span>
+  <span class="{{singleStatClass}}">
+    <md-icon class="material-icons">chat_bubble_outline</md-icon>
+    <span class="{{statsTextClass}}">{{topic.topicReplies}}</span>
+  </span>
+  <span class="{{singleStatClass}}">
+    <md-icon class="material-icons">whatshot</md-icon>
+    <span class="{{statsTextClass}}">{{topic.topicViews}}</span>
+  </span>
+</div>

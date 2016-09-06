@@ -1,0 +1,157 @@
+<md-toolbar class="md-primary md-hue-1" hide-xs>
+  <div class="md-toolbar-tools">
+    <a ng-if="mainOptions.siteLogo != null" href="{{mainOptions.baseurl}}"><img class="navbarLogo" ng-src="{{mainOptions.siteLogo}}"/></a>
+    <a href="{{mainOptions.baseurl}}" class="brand">{{mainOptions.website}}</a>
+    <span flex></span>
+    <div ng-if="mainOptions.homePage != -2">
+      <md-button ui-sref="main.channels" ><md-icon class="material-icons">widgets</md-icon>Channels</md-button>
+      <md-button ng-show="mainPages.length <= 5" ng-repeat="page in mainPages" ui-sref="main.details({ topicSlug:page.topicSlug, topicID:page.id })" >{{page.topicTitle}}</md-button>
+      <md-menu ng-show="mainPages.length > 5" md-offset="0 40" md-position-mode="target-right target">
+        <md-button ng-href="" aria-label="Open Menu" ng-click="openMenu($mdOpenMenu,$event)"><md-icon class="material-icons">insert_drive_file</md-icon> Pages <md-icon class="material-icons">keyboard_arrow_down</md-icon></md-button>
+        <md-menu-content width="4">
+          <md-menu-item ng-repeat="page in mainPages">
+            <md-button ui-sref="main.detail({ topicSlug: page.topicSlug })">{{page.topicTitle}}</md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+      <md-button ng-if="authenticated == true" ng-click="askDialog()" ng-href=""><md-icon class="material-icons">help_outline</md-icon> Ask</md-button>
+      <md-button ng-if="authenticated != true" ng-click="authDialog($event)" ng-href="">Sign In/ Sign Up</md-button>
+      <md-menu ng-if="authenticated == true" md-offset="0 52" md-position-mode="target-right target">
+        <md-button ng-href="" aria-label="Open Menu" ng-click="openMenu($mdOpenMenu,$event)" class="userName">{{currentUser.name}} <img class="avatarImage" src="{{currentUser.avatar}}"/></md-button>
+        <md-menu-content width="4">
+          <md-menu-item>
+            <md-button ng-click="showProfile($event, currentUser.name)"><md-icon class="materials-icon">person_outline</md-icon> My Profile</md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="editProfileDialog($event)"><md-icon class="materials-icon">settings</md-icon> Settings</md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="toggleSearch()"><md-icon class="materials-icon">search</md-icon> Search</md-button>
+          </md-menu-item>
+          <md-divider></md-divider>
+          <md-menu-item ng-if="currentUser.role == 1">
+            <md-button ui-sref="dashboard.home"><md-icon class="materials-icon">dashboard</md-icon> Dashboard</md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="signOut()"><md-icon class="materials-icon">exit_to_app</md-icon> Sign Out</md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+    </div>
+  </div>
+</md-toolbar>
+
+<md-toolbar class="md-primary md-hue-1 searchBar" ng-init="searchType='Topic'" ng-show="showSearch == true" flex="100" flex-gt-md="60">
+  <div layout="row">
+    <md-input-container md-no-float class="md-block" flex="95">
+      <md-icon class="material-icons">search</md-icon>
+      <label>Search...</label>
+      <input ng-model="searchContent" type="text" ng-change="doSearch()">
+    </md-input-container>
+    <md-button  ng-click="toggleSearch()" flex="5"><md-icon class="material-icons">close</md-icon></md-button>
+  </div>
+  <md-radio-group ng-model="searchType" layout="row" layout-align="center start" layout-padding ng-change="doSearch()">
+    <md-radio-button value="Topic">Topic</md-radio-button>
+    <md-radio-button value="Channel">Channel</md-radio-button>
+    <md-radio-button value="User">User</md-radio-button>
+  </md-radio-group>
+  <md-content>
+    <md-list ng-show="searchResults.data && searchContent != ''">
+      <md-list-item ng-if="searchType == 'Topic'" ng-repeat="result in searchResults.data" ui-sref="main.details({topicSlug:result.topicSlug, result:topic.id})">
+        <img ng-src="{{result.topicThumbnail}}" class="md-avatar" />
+        <div class="md-list-item-text">
+          <span class="media-heading">{{result.topicTitle}}</span>
+        </div>
+        <md-divider></md-divider>
+      </md-list-item>
+      <md-list-item ng-if="searchType == 'Channel'" ng-repeat="result in searchResults.data" ui-sref="main.channel({ channelSlug: result.channelSlug, channelID: result.id })" >
+        <img ng-src="{{result.channelImg}}" class="md-avatar" />
+        <div class="md-list-item-text">
+          <span class="media-heading">{{result.channelTitle}}</span>
+        </div>
+        <md-divider></md-divider>
+      </md-list-item>
+      <md-list-item ng-if="searchType == 'User'" ng-repeat="result in searchResults.data" ng-click="showProfile($event, result.name)" >
+        <img ng-src="{{result.avatar}}" class="md-avatar" />
+        <div class="md-list-item-text">
+          <span class="media-heading">{{result.displayName}}</span>
+        </div>
+        <md-divider></md-divider>
+      </md-list-item>
+    </md-list>
+  </md-list>
+</md-toolbar>
+
+<md-toolbar class="md-primary md-hue-1 footerMenu" hide-gt-sm>
+  <div class="md-toolbar-tools">
+    <md-button flex class="md-cornered" ui-sref="main.home"><md-icon class="material-icons">home</md-icon></md-button>
+    <md-button flex class="md-cornered" ng-click="authDialog($event);" ng-if="authenticated != true"><md-icon class="material-icons">person_add</md-icon></md-button>
+    <md-button flex class="md-cornered" ng-click="userMenu();" ng-if="authenticated == true"><md-icon class="material-icons">person</md-icon></md-button>
+    <md-button flex class="md-cornered" ng-click="footerMenu();"><md-icon class="material-icons">menu</md-icon></md-button>
+    <md-button flex class="md-cornered" ng-click="authDialog($event);" ng-if="authenticated != true"><md-icon class="material-icons">help_outline</md-icon></md-button>
+    <md-button flex class="md-cornered" ng-click="askDialog()" ng-if="authenticated == true"><md-icon class="material-icons">help_outline</md-icon></md-button>
+  </div>
+</md-toolbar>
+
+<script type="text/ng-template" id="footerMenu.html">
+  <md-bottom-sheet class="md-list" ng-cloak>
+    <md-toolbar class="md-primary md-hue-1">
+      <div class="md-toolbar-tools" layout-margin>
+        <span flex></span>
+        <a ng-if="mainOptions.siteLogo != null" href="{{mainOptions.baseurl}}"><img class="navbarLogo" ng-src="{{mainOptions.siteLogo}}"/></a>
+        <a href="{{mainOptions.baseurl}}index.html" class="brand">{{mainOptions.website}}</a>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+    <md-divider></md-divider>
+    <md-list>
+      <md-list-item ng-click="toggleSearch(); closeSheet()">
+        <md-icon class="material-icons">search</md-icon>
+        <p>Search</p>
+      </md-list-item>
+      <md-list-item ui-sref="main.channels" ng-click="closeSheet()">
+        <div class="md-list-item-text">
+          <md-icon class="material-icons">widgets</md-icon>
+          <span class="media-heading">Channels</span>
+        </div>
+      </md-list-item>
+      <md-list-item ng-repeat="page in mainPages" ui-sref="main.details({ topicSlug:page.topicSlug, topicID:page.id })" ng-click="closeSheet()">
+        <div class="md-list-item-text">
+          <span class="media-heading">{{page.topicTitle}}</span>
+        </div>
+        <md-divider ng-show="!$last"></md-divider>
+      </md-list-item>
+    </md-list>
+  </md-bottom-sheet>
+</script>
+
+<script type="text/ng-template" id="userMenu.html">
+  <md-bottom-sheet class="md-list" ng-cloak>
+    <md-toolbar class="md-primary md-hue-1">
+      <div class="md-toolbar-tools">
+        <span flex></span>
+        <div class="userName">{{currentUser.name}} <img class="avatarImage" src="{{currentUser.avatar}}"/></div>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+    <md-list>
+      <md-list-item ng-click="showProfile($event, currentUser.name)" ng-click="closeSheet()" class="no-padding">
+        <md-icon class="materials-icon">person_outline</md-icon>
+        <p class="media-heading">My Profile</p>
+      </md-list-item>
+      <md-list-item ng-click="editProfileDialog($event); closeSheet();" class="no-padding">
+        <md-icon class="materials-icon">settings</md-icon>
+        <p class="media-heading">Settings</p>
+      </md-list-item>
+      <md-divider></md-divider>
+      <md-list-item ng-if="currentUser.role == 1" ui-sref="dashboard.home" ng-click="closeSheet()" class="no-padding">
+        <md-icon class="materials-icon">dashboard</md-icon>
+        <p class="media-heading">Dashboard</p>
+      </md-list-item>
+      <md-list-item ng-click="signOut(); closeSheet();" class="no-padding">
+        <md-icon class="materials-icon">exit_to_app</md-icon>
+        <p class="media-heading">Sign Out</p>
+      </md-list-item>
+    </md-list>
+  </md-bottom-sheet>
+</script>

@@ -1,0 +1,12 @@
+<div layout="row" layout-sm="column" layout-xs="column" layout-wrap layout-padding>
+  <div class="topicClass" layout="column" flex="100" flex-gt-sm="{{boxSize}}" ng-if="channel.channelTopics != 0" ng-repeat="channel in channels" ui-sref="main.channel({ channelSlug: channel.channelSlug })">
+    <div ng-if="topic.topicThumbnail != 0" class="post-box" ng-style="{'background-image':'url({{channel.channelImg}})'}" layout="column">
+      <span flex></span>
+      <div class="post-details" layout="row" layout-align="start end">
+        <h3>{{channel.channelTitle}}</h3>
+      </div>
+    </div>
+    <h3 ng-if="channelImg.channelImg == 0">{{channel.channelTitle}}</h3>
+    <span ng-if="channelsExcerpt == 'true'">{{channel.channelDesc}}</span>
+  </div>
+</div>

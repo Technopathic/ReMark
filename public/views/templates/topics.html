@@ -1,0 +1,19 @@
+<h2 class="content-h2" ui-sref="main.channel({ channelSlug: topicsChannel})">{{topicsTitle}}</h2>
+<md-divider></md-divider>
+<div layout="row" layout-sm="column" layout-xs="column" layout-wrap layout-padding>
+  <div class="topicClass" layout="column" flex="100" flex-gt-sm="{{boxSize}}" ng-repeat="topic in topics.data" ui-sref="main.details({topicSlug:topic.topicSlug, topicID:topic.id})">
+    <div ng-if="topic.topicThumbnail != 0" class="post-box" ng-style="{'background-image':'url({{topic.topicThumbnail}})'}" layout="column">
+      <span flex></span>
+      <div class="post-details" layout="row" layout-align="start end">
+        <h3>{{topic.topicTitle}}</h3>
+      </div>
+    </div>
+    <h3 ng-if="topic.topicThumbnail == 0">{{topic.topicTitle}}</h3>
+    <span ng-if="topicsExcerpt == 'true'">{{topic.topicBody}}</span>
+  </div>
+</div>
+
+<div ng-if="topics.current_page < topics.last_page" class="paginationButtons" layout="row" layout-align="center center">
+  <md-button ng-if="topics.current_page != 1" ng-click="getTopics(topicsChannel, topicsCount, topics.current_page - 1)"><md-icon class="material-icons">keyboard_arrow_left</md-icon> Previous</md-button>
+  <md-button ng-if="topics.current_page < topics.last_page" ng-click="getTopics(topicsChannel, topicsCount, topics.current_page + 1)">Next <md-icon class="material-icons">keyboard_arrow_right</md-icon></md-button>
+</div>

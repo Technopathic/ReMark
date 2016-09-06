@@ -1,0 +1,15 @@
+<md-dialog aria-label="Ask" flex-sm="100" ng-cloak>
+  <div layout="column" layout-padding>
+    <md-dialog-content>
+      <div layout="column" class="askContainer" layout-align="center start" layout-padding>
+        <p>What is your Question?</p>
+        <textarea ng-model="askData.askBody" placeholder="" autofocus="true"></textarea>
+      </div>
+      <md-divider></md-divider>
+      <div class="md-dialog-actions askOptions" layout="row" layout-align="end end">
+        <md-button type="submit" ng-click="doAsk()"><md-icon class="material-icons">check</md-icon> Ask</md-button>
+        <md-button ng-click="dialogClose()"><md-icon class="material-icons">close</md-icon> Close</md-button>
+      </div>
+    </md-dialog-content>
+  </div>
+</md-dialog>

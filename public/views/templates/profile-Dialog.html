@@ -1,0 +1,15 @@
+<md-dialog aria-label="Profile" ng-cloak>
+  <div layout="column" layout-padding>
+    <md-dialog-content>
+      <div layout="column" layout-align="center center">
+        <img src="{{user.avatar}}"/>
+        <h3>{{user.displayName}}</h3>
+        <pre>@{{user.name}}</pre>
+        <p>{{user.profileTitle}}<p>
+        <div layout="row">
+          <md-button class="md-icon-button" ng-if="user.website != null" ng-href="{{user.website}}"><i class="fa fa-globe fa-2x"></i></md-button>
+        </div>
+      </div>
+    </md-dialog-content>
+  </div>
+</md-dialog>

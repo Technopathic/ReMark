@@ -1,0 +1,10 @@
+<div ng-repeat="feature in features" ng-if="features.length > 0">
+  <div ng-if="featureIndex == $index" ui-sref="main.details({topicSlug:feature.topicSlug, topicID:feature.id})">
+    <div layout-gt-sm="row" layout="column" layout-align-gt-sm="start end" layout-align="end center" layout-align-sm="end center" layout-padding class="jumbotron" ng-style="{'background-image':'linear-gradient( rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url({{feature.topicImg}})'}">
+      <h1 class="info" flex-gt-sm>{{feature.topicTitle}}</h1>
+      <div class="{{selectClass}}" layout="row" layout-align="end end" flex-gt-sm>
+        <div ng-repeat="feature in features" ng-click="setFeature($index)" ng-class="featureIndex == $index ? 'active' : ''"></div>
+      </div>
+    </div>
+  </div>
+</div>

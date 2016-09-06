@@ -1,0 +1,286 @@
+.content-h2 {
+  color:#444444;
+  font-variant:small-caps;
+  padding-top:7px;
+}
+
+/*Dashboard*/
+
+.dash-block {
+  background:#FFFFFF;
+  border:1px solid #CCCCCC;
+}
+
+.dash-block a {
+  text-decoration: none;
+  color: #555555;
+}
+
+.block-footer {
+  background:#FFFFFF;
+  font-weight:300;
+  color:#AAAAAA;
+}
+
+.block-footer span {
+  font-size:1.6em;
+  font-variant: small-caps;
+}
+
+.block-header {
+  font-weight:300;
+  color:#AAAAAA;
+  font-size:1.5em;
+  border-bottom:1px solid #CCCCCC;
+}
+
+.block-content {
+  margin-top:10px;
+}
+
+.dash-block h1{
+  text-align:center;
+  font-size:5.0em;
+  color:#222222;
+}
+
+.dash-block h2{
+  text-align:center;
+  font-size:2.0em;
+  margin:10px;
+  font-weight:300;
+  color:#AAAAAA;
+  border-bottom:1px solid #AAAAAA;
+}
+
+.dash-block h2 a {
+  color:#AAAAAA;
+}
+
+.dash-block span img{
+  max-height:200px;
+  width:auto;
+}
+
+.dashImage {
+  width:100%;
+  height:260px;
+}
+
+.scratchBlock textarea{
+  border:none;
+  width:100%;
+  height:260px;
+  resize:none;
+  overflow:auto;
+  background:#EEEEEE;
+}
+
+.feedImage {
+  height:300px;
+  overflow: hidden;
+}
+
+.feedBox {
+  height:auto;
+  min-height:300px;
+  cursor:pointer;
+  margin:0;
+}
+
+.feedBox img {
+  width:100%;
+  height:auto;
+}
+
+.feedSelectBox {
+  margin:0 auto;
+  margin-top:10px;
+  margin-bottom:10px;
+  width:95%;
+  height:auto;
+  max-height:400px;
+  cursor:pointer;
+}
+
+.feedSelectImage {
+  height:350px;
+  overflow:hidden;
+}
+
+.feedSelectBox img {
+  width:100%;
+  height:auto;
+}
+
+.dash-block .md-list-item-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Dashboard Content */
+
+.columnTitle {
+  padding-left:10px;
+  padding-top:10px;
+}
+
+.columnMain {
+  height:calc(100vh - 65px);
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+
+.recordContainer {
+  background:rgba(0, 0, 0, 0.2);
+  width:100%;
+  height:270px;
+  float: left;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  z-index: 5;
+}
+
+
+.admin-topics .md-headline {
+  max-width:350px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.dashSheetContainer .footerMenu {
+  position:fixed;
+  bottom:0;
+}
+
+.dashSheetOptions {
+  height:50px;
+  background:#DDDDDD;
+  position:fixed;
+  right:0;
+  bottom:0;
+  z-index:999999;
+}
+
+.dashSheetFull textarea {
+  height:90vh !important;
+  overflow-y:auto;
+  resize:none;
+  border:none;
+}
+
+.dashSheetContainer textarea {
+  height:300px;
+  overflow-y:auto;
+  resize:none;
+  border:none;
+}
+
+.topicPreview {
+  height:90vh !important;
+  overflow-y:auto;
+}
+
+/* Users */
+
+.user-block {
+  width:100%;
+  background:#DDDDDD;
+  border-radius:5px;
+}
+
+.user-block img {
+  border:1px solid #000000;
+  margin-top:10px;
+  border-radius:50%;
+  max-width:100px;
+  max-height:100px;
+}
+
+.userDetails span {
+  padding:3px;
+  font-size:small;
+}
+
+.userSearch {
+  padding-top:30px;
+}
+
+/*Options*/
+
+.appContainer {
+  background:#DDDDDD;
+  padding:15px;
+  border-radius:5px;
+  margin-top:10px;
+}
+
+.appContainer img {
+  width: 100%;
+}
+
+.menuSelect {
+  border:1px solid #BBBBBB;
+  border-radius:3px;
+  padding:5px;
+  background:#FFFFFF;
+  margin-top:5px;
+  margin-bottom:5px;
+}
+
+.menuSelect label {
+  font-weight:normal;
+}
+
+
+/* Install */
+.Installcontainer {
+  background:#FFFFFF;
+  width:960px;
+  margin:0 auto;
+  box-shadow:0 0 7px 2px rgba(0, 0, 0, 0.2);
+}
+.logoBanner {
+  background: url('../img/dashpic.png') no-repeat center;
+  background-size:cover;
+  height:250px;
+  width:960px;
+}
+.Installcontainer section {
+  padding-left:30px;
+  padding-right:30px;
+}
+.Installcontainer p {
+  padding:20px;
+  font-variant: small-caps;
+}
+.Installcontainer section h1 {
+  font-variant: small-caps;
+  color:#444444;
+  font-size:2em;
+  padding-top:20px;
+  padding-bottom:5px;
+}
+.Installcontainer section .input-section {
+  padding:15px;
+}
+.Installcontainer section .input-container {
+  width: 80%;
+}
+.Installcontainer section .input-container label {
+  font-variant:small-caps;
+  width:30%;
+  display:inline-block;
+}
+.Installcontainer section .input-container input {
+  width:40%;
+  box-sizing: border-box;
+  height:30px;
+  border-radius:4px;
+  border: 1px solid #CCCCCC;
+  padding:5px;
+}

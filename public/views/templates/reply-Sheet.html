@@ -1,0 +1,11 @@
+<md-bottom-sheet layout="row" class="sheetContainer" ng-class="displayFull == true ? 'sheetFull' : ''">
+    <form layout="column" flex="50" flex-sm="100" layout-padding>
+      <textarea ng-model="replyData.replyBody" placeholder="" autofocus="true"></textarea>
+    </form>
+    <div class="replyPreview" ng-if="replyData.replyBody" markdown-to-html="replyData.replyBody" flex="50" layout-padding hide-sm hide-xs></div>
+    <div class="sheetOptions" layout="row">
+      <md-button ng-click="closeReply()" class="md-icon-button" md-ink-ripple="false"><md-icon class="materials-icon">close</md-icon></md-button>
+      <md-button ng-click="fullSheet()" class="md-icon-button" md-ink-ripple="false" hide-sm><md-icon class="materials-icon">fullscreen</md-icon></md-button>
+      <md-button ng-click="doReply()" class="md-icon-button" md-ink-ripple="false"><md-icon class="materials-icon">check</md-icon></md-button>
+    </div>
+</md-bottom-sheet>

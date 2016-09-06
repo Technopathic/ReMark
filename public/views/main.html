@@ -1,0 +1,17 @@
+<navbar></navbar>
+
+<div class="notice" ng-if="mainOptions.homePage == -2"  layout="column" layout-align="center center">
+  <div class="detail-header">
+    <span flex></span>
+    <h1>We are currently Offline.</h1>
+    <span>Please check back with us shortly.</span>
+  </div>
+</div>
+
+<main ui-view></main>
+
+<footer layout="row">
+  <div flex></div>
+  <div class="copyright" flex><small>&copy; {{mainOptions.website}} - Powered by ReMark</small></div>
+  <div flex></div>
+</footer>

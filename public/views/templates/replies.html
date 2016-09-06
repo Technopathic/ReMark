@@ -1,0 +1,50 @@
+<div class="detail-replies {{replyClass}}" id="replies" ng-if="topic.allowReplies == 1">
+  <div layout="row">
+    <md-button ng-if="authenticated == true" ng-click="makeReply(0)"><md-icon class="material-icons">add</md-icon> Create Reply</md-button>
+    <md-button ng-if="authenticated != true" ng-click="authDialog($event)"><md-icon class="material-icons">add</md-icon> Create Reply</md-button>
+  </div>
+
+    <md-list>
+      <md-list-item class="listItem replyItem" ng-repeat="reply in replies" id="{{reply.id}}" ng-class="replyHash == reply.id ? 'activeReply' : ''" layout="row" layout-align="start start" layout-padding flex>
+        <img ng-src="{{reply.avatar}}" class="md-avatar" ng-click="showProfile($event, reply.name)"/>
+        <div class="md-list-item-text" flex="100">
+          <div markdown-to-html="reply.replyBody" flex></div>
+          <span>
+            <strong ng-click="showProfile($event, reply.name)">{{reply.displayName}}</strong>
+            &nbsp; - &nbsp;
+            {{reply.created_at | amCalendar}}
+            &nbsp; - &nbsp;
+            <md-icon ng-if="authenticated == true" ng-click="makeReply(reply.id)" class="material-icons md-18">chat_bubble_outline</md-icon></md-button>
+            <md-icon ng-if="authenticated != true" ng-click="authDialog($event)" class="material-icons md-18">chat_bubble_outline</md-icon></md-button>
+            <md-icon ng-if="reply.replyFeature == 1" class="material-icons md-18">star</md-icon>
+          </span>
+          <md-list-item class="listItem replyItem" ng-repeat="childReply in reply.childReplies | limitTo:3" id="{{childReply.id}}" ng-class="replyHash == childReply.id ? 'activeReply' : ''" ng-if="reply.showChildren == 0" layout="row" layout-align="start start" layout-margin>
+            <img  ng-src="{{childReply.avatar}}" class="md-avatar" ng-click="showProfile($event, childReply.name)"/>
+            <div class="md-list-item-text">
+              <div markdown-to-html="childReply.replyBody" flex></div>
+              <span>
+                <strong ng-click="showProfile($event, childReply.name)">{{childReply.displayName}}</strong>
+                &nbsp; - &nbsp;
+                {{childReply.created_at | amCalendar}}
+                <md-icon ng-if="childReply.replyFeature == 1" class="material-icons md-18">star</md-icon>
+              </span>
+            </div>
+          </md-list-item>
+          <md-list-item class="listItem replyItem" ng-repeat="childReply in reply.childReplies" id="{{childReply.id}}" ng-class="replyHash == childReply.id ? 'activeReply' : ''" ng-if="reply.showChildren == 1" layout="row" layout-align="start start" layout-margin>
+            <img  ng-src="{{childReply.avatar}}" class="md-avatar" ng-click="showProfile($event, childReply.name)" />
+            <div class="md-list-item-text">
+              <div markdown-to-html="childReply.replyBody" flex></div>
+              <span>
+                <strong ng-click="showProfile($event, childReply.name)">{{childReply.displayName}}</strong>
+                &nbsp; - &nbsp;
+                {{childReply.created_at | amCalendar}}
+                <md-icon ng-if="childReply.replyFeature == 1" class="material-icons md-18">star</md-icon>
+              </span>
+            </div>
+          </md-list-item>
+          <md-button ng-click="toggleReplies($index)" ng-if="reply.childCount > 3 && reply.showChildren == 0">Show {{reply.childCount - 3}} More Replies</md-button>
+          <md-button ng-click="toggleReplies($index)" ng-if="reply.showChildren == 1">Hide Replies</md-button>
+        </div>
+      </md-list-item>
+    </md-list>
+  </div>

@@ -1,0 +1,556 @@
+<md-toolbar class="md-primary md-hue-1" hide-gt-md>
+  <div class="md-toolbar-tools">
+    <md-button class="md-icon-button" aria-label="leftPane" ng-click="openLeftContent()">
+      <md-icon class="materials-icon">keyboard_arrow_left</md-icon>
+    </md-button>
+    <span flex></span>
+    <md-button class="md-icon-button" aria-label="rightPane" ng-click="openRightContent()">
+      <md-icon class="materials-icon">keyboard_arrow_right</md-icon>
+    </md-button>
+  </div>
+</md-toolbar>
+
+<md-sidenav class="md-sidenav-left" md-component-id="leftContent" md-disable-backdrop>
+  <div class="admin-channels" layout="column" flex>
+    <div layout="row" class="columnTitle">
+      <h2 class="content-h2">Channels</h2>
+      <md-button ng-click="openLeftContent(); makeChannel()"><md-icon class="material-icons">add</md-icon> Channel</md-button>
+    </div>
+    <md-divider></md-divider>
+    <div layout="row">
+      <md-input-container class="md-block" flex-gt-sm>
+        <label>Search Channels</label>
+        <input ng-model="searchChannel">
+      </md-input-container>
+      <md-menu>
+        <md-button class="headerTitle" ng-click="sortMenu($mdOpenMenu,$event)">Sort <md-icon class="material-icons">arrow_drop_down</md-icon></md-button>
+        <md-menu-content width="4">
+          <md-menu-item>
+            <md-button ng-click="sortChannels('channelTitle')">
+              <md-icon class="material-icons">sort_by_alpha</md-icon> Sort by Name
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="sortChannels('channelDate')">
+              <md-icon class="material-icons">date_range</md-icon> Sort by Creation Date
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="sortChannels('channelModified')">
+              <md-icon class="material-icons">date_range</md-icon> Sort by Modified Date
+            </md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+    </div>
+    <md-card ng-repeat="channel in channels.data | filter:searchChannel" ng-class="activeChannel == channel.id ? 'active' : ''">
+      <md-card-title ng-click="getTopics(channel.id, $index)">
+        <md-card-title-text>
+          <span class="md-headline">
+            {{channel.channelTitle}}
+            <md-tooltip md-direction="top">
+              {{channel.channelSlug}}
+            </md-tooltip>
+          </span>
+          <span class="md-subhead">{{channel.channelDesc}}</span>
+          <span class="md-subhead">{{channel.channelTopics}} Topic<span ng-if="channel.channelTopics != 1">s</span></span>
+        </md-card-title-text>
+        <md-card-title-media>
+          <div class="md-media-sm card-media">
+            <div class="preview-image">
+              <img src="{{channel.channelImg}}" ng-src="{{channel.channelImg}}">
+            </div>
+          </div>
+        </md-card-title-media>
+      </md-card-title>
+      <md-card-actions ng-if="channel.id != 1" layout="row" layout-align="end center" ng-show="channel.id == activeChannel">
+        <md-button class="md-icon-button" ng-if="channel.id != 1" ng-hide="channelDelete == channel.id" ng-click="deleteChannelConfirm(channel.id)"><md-icon class="material-icons">delete</md-icon></md-button>
+        <md-button ng-if="channel.id != 1 && channelDelete == channel.id" ng-click="deleteChannel(channel.id, $index)"><md-icon class="material-icons">delete</md-icon> Sure?</md-button>
+        <md-button class="md-icon-button" ng-if="channel.id != 1" ng-click="openLeftContent(); editChannel(channel.id, $index)"><md-icon class="material-icons">mode_edit</md-icon></md-button>
+      </md-card-actions>
+    </md-card>
+    <div ng-if="channels.current_page != channels.last_page" layout="row" layout-align="center center" layout-padding flex>
+      <md-button ng-click="moreChannels()" flex>Load More</md-button>
+    </div>
+  </div>
+</md-sidenav>
+
+<md-sidenav class="md-sidenav-right" md-component-id="rightContent" md-disable-backdrop>
+  <div class="admin-topics" layout="column" flex>
+    <div layout="row" class="columnTitle">
+      <h2 class="content-h2">Topics</h2>
+      <md-button ng-click="openRightContent(); makeContent()"><md-icon class="material-icons">add</md-icon> Topic</md-button>
+    </div>
+    <md-divider></md-divider>
+    <div layout="row">
+      <md-input-container flex-gt-sm>
+        <label>Search Topics</label>
+        <input ng-model="searchTopic">
+      </md-input-container>
+      <md-menu>
+        <md-button class="headerTitle" ng-click="sortMenu($mdOpenMenu,$event)">Sort <md-icon class="material-icons">arrow_drop_down</md-icon></md-button>
+        <md-menu-content width="4">
+          <md-menu-item>
+            <md-button ng-click="sortTopics('topicTitle')">
+              <md-icon class="material-icons">sort_by_alpha</md-icon> Sort by Name
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="sortTopics('topicDate')">
+              <md-icon class="material-icons">date_range</md-icon> Sort by Creation Date
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="sortTopics('topicModified')">
+              <md-icon class="material-icons">date_range</md-icon> Sort by Modified Date
+            </md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+    </div>
+    <md-card ng-repeat="topic in topics.data | filter:searchTopic track by $index" ng-class="activeTopic == topic.id ? 'active' : ''">
+      <md-card-title ng-click="selectTopic(topic.id)">
+        <md-card-title-text>
+          <span class="md-headline">{{topic.topicTitle}}</span>
+          <span>{{topic.topicType}} - {{topic.topicStatus}}</span>
+          <span class="md-subhead"><md-icon class="material-icons">access_time</md-icon> {{topic.created_at | amDateFormat:'ddd, MMM Do YYYY, h:mm:ss a'}}</span>
+          <span class="md-subhead"><md-icon class="material-icons">whatshot</md-icon> {{topic.topicViews}} Views</span>
+          <span class="md-subhead"><md-icon class="material-icons">chat_bubble_outline</md-icon> {{topic.topicReplies}} Replies</span>
+          <span class="md-subhead"><md-icon class="material-icons">favorite_outline</md-icon> {{topic.topicVotes}} Votes</span>
+        </md-card-title-text>
+      </md-card-title>
+      <md-card-actions layout="row" layout-align="end center" ng-show="topic.id == activeTopic">
+        <md-checkbox ng-model="topic.pageMenu" ng-true-value="1" ng-false-value="0" ng-change="pageMenu(topic.id)" aria-label="Add Page to Menu">Menu</md-checkbox>
+        <md-button class="md-icon-button" aria-label="Set Feature" ng-click="setFeature(topic.id, $index)"><md-icon ng-if="topic.topicFeature == '0'" class="material-icons">star_border</md-icon><md-icon ng-if="topic.topicFeature == '1'" class="material-icons">star</md-icon></md-button>
+        <md-button class="md-icon-button" ng-click="openRightContent(); editTopic(topic.id, $index)"><md-icon class="material-icons">mode_edit</md-icon></md-button>
+        <md-button class="md-icon-button" ng-hide="topicDelete == topic.id" ng-click="deleteTopicConfirm(topic.id)"><md-icon class="material-icons">delete</md-icon></md-button>
+        <md-button ng-if="topicDelete == topic.id" ng-click="deleteTopic(topic.id, $index)"><md-icon class="material-icons">delete</md-icon> Sure?</md-button>
+      </md-card-actions>
+    </md-card>
+    <div ng-if="topics.current_page < topics.last_page" layout="row" layout-align="center center" layout-padding flex>
+      <md-button ng-click="moreTopics()" flex>Load More</md-button>
+    </div>
+  </div>
+</md-sidenav>
+
+<div class="dashboardContainer" layout="row" flex>
+  <div class="columnMain admin-channels" layout="column" hide-xs hide-sm flex="20">
+    <div layout="row" class="columnTitle">
+      <h2 class="content-h2">Channels</h2>
+      <md-button ng-click="makeChannel()"><md-icon class="material-icons">add</md-icon> Channel</md-button>
+    </div>
+    <md-divider></md-divider>
+    <div layout="row">
+      <md-input-container class="md-block" flex-gt-sm>
+        <label>Search Channels</label>
+        <input ng-model="searchChannel">
+      </md-input-container>
+      <md-menu>
+        <md-button class="headerTitle" ng-click="sortMenu($mdOpenMenu,$event)">Sort <md-icon class="material-icons">arrow_drop_down</md-icon></md-button>
+        <md-menu-content width="4">
+          <md-menu-item>
+            <md-button ng-click="sortChannels('channelTitle')">
+              <md-icon class="material-icons">sort_by_alpha</md-icon> Sort by Name
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="sortChannels('channelDate')">
+              <md-icon class="material-icons">date_range</md-icon> Sort by Creation Date
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="sortChannels('channelModified')">
+              <md-icon class="material-icons">date_range</md-icon> Sort by Modified Date
+            </md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+    </div>
+    <md-card ng-repeat="channel in channels.data | filter:searchChannel" ng-class="activeChannel == channel.id ? 'active' : ''">
+      <md-card-title ng-click="getTopics(channel.id, $index)">
+        <md-card-title-text>
+          <span class="md-headline">
+            {{channel.channelTitle}}
+            <md-tooltip md-direction="top">
+              {{channel.channelSlug}}
+            </md-tooltip>
+          </span>
+          <span class="md-subhead">{{channel.channelDesc}}</span>
+          <span class="md-subhead">{{channel.channelTopics}} Topic<span ng-if="channel.channelTopics != 1">s</span></span>
+        </md-card-title-text>
+        <md-card-title-media>
+          <div class="md-media-sm card-media">
+            <div class="preview-image">
+              <img src="{{channel.channelImg}}" ng-src="{{channel.channelImg}}">
+            </div>
+          </div>
+        </md-card-title-media>
+      </md-card-title>
+      <md-card-actions ng-if="channel.id != 1" layout="row" layout-align="end center" ng-show="channel.id == activeChannel">
+        <md-button class="md-icon-button" ng-if="channel.id != 1" ng-hide="channelDelete == channel.id" ng-click="deleteChannelConfirm(channel.id)"><md-icon class="material-icons">delete</md-icon></md-button>
+        <md-button ng-if="channel.id != 1 && channelDelete == channel.id" ng-click="deleteChannel(channel.id, $index)"><md-icon class="material-icons">delete</md-icon> Sure?</md-button>
+        <md-button class="md-icon-button" ng-if="channel.id != 1" ng-click="editChannel(channel.id, $index)"><md-icon class="material-icons">mode_edit</md-icon></md-button>
+      </md-card-actions>
+    </md-card>
+    <div ng-if="channels.current_page != channels.last_page" layout="row" layout-align="center center" layout-padding flex>
+      <md-button ng-click="moreChannels()" flex>Load More</md-button>
+    </div>
+  </div>
+  <md-divider hide-xs hide-sm></md-divider>
+  <div class="columnMain admin-topics" layout="column" hide-xs hide-sm flex="30">
+    <div layout="row" class="columnTitle">
+      <h2 class="content-h2">Topics</h2>
+      <md-button ng-click="makeContent()"><md-icon class="material-icons">add</md-icon> Topic</md-button>
+    </div>
+    <md-divider></md-divider>
+    <div layout="row">
+      <md-input-container flex-gt-sm>
+        <label>Search Topics</label>
+        <input ng-model="searchTopic">
+      </md-input-container>
+      <md-menu>
+        <md-button class="headerTitle" ng-click="sortMenu($mdOpenMenu,$event)">Sort <md-icon class="material-icons">arrow_drop_down</md-icon></md-button>
+        <md-menu-content width="4">
+          <md-menu-item>
+            <md-button ng-click="sortTopics('topicTitle')">
+              <md-icon class="material-icons">sort_by_alpha</md-icon> Sort by Name
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="sortTopics('topicDate')">
+              <md-icon class="material-icons">date_range</md-icon> Sort by Creation Date
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="sortTopics('topicModified')">
+              <md-icon class="material-icons">date_range</md-icon> Sort by Modified Date
+            </md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+    </div>
+    <md-card ng-repeat="topic in topics.data | filter:searchTopic track by $index" ng-class="activeTopic == topic.id ? 'active' : ''">
+      <md-card-title ng-click="selectTopic(topic.id)">
+        <md-card-title-text>
+          <span class="md-headline">{{topic.topicTitle}}</span>
+          <span>{{topic.topicType}} - {{topic.topicStatus}}</span>
+          <span class="md-subhead"><md-icon class="material-icons">access_time</md-icon> {{topic.created_at | amDateFormat:'ddd, MMM Do YYYY, h:mm:ss a'}}</span>
+          <span class="md-subhead"><md-icon class="material-icons">whatshot</md-icon> {{topic.topicViews}} Views</span>
+          <span class="md-subhead"><md-icon class="material-icons">chat_bubble_outline</md-icon> {{topic.topicReplies}} Replies</span>
+          <span class="md-subhead"><md-icon class="material-icons">favorite_outline</md-icon> {{topic.topicVotes}} Votes</span>
+        </md-card-title-text>
+        <md-card-title-media>
+          <div class="md-media-lg card-media">
+            <div class="preview-image">
+              <img ng-if="topic.topicThumbnail != 0" ng-src="{{topic.topicThumbnail}}">
+            </div>
+          </div>
+        </md-card-title-media>
+      </md-card-title>
+      <md-card-actions layout="row" layout-align="end center" ng-show="topic.id == activeTopic">
+        <md-checkbox ng-model="topic.pageMenu" ng-true-value="1" ng-false-value="0" ng-change="pageMenu(topic.id)" aria-label="Add Page to Menu">Menu</md-checkbox>
+        <md-button class="md-icon-button" aria-label="Set Feature" ng-click="setFeature(topic.id, $index)"><md-icon ng-if="topic.topicFeature == '0'" class="material-icons">star_border</md-icon><md-icon ng-if="topic.topicFeature == '1'" class="material-icons">star</md-icon></md-button>
+        <md-button class="md-icon-button" ng-click="editTopic(topic.id, $index)"><md-icon class="material-icons">mode_edit</md-icon></md-button>
+        <md-button class="md-icon-button" ng-hide="topicDelete == topic.id" ng-click="deleteTopicConfirm(topic.id)"><md-icon class="material-icons">delete</md-icon></md-button>
+        <md-button ng-if="topicDelete == topic.id" ng-click="deleteTopic(topic.id, $index)"><md-icon class="material-icons">delete</md-icon> Sure?</md-button>
+      </md-card-actions>
+    </md-card>
+    <div ng-if="topics.current_page < topics.last_page" layout="row" layout-align="center center" layout-margin>
+      <md-button ng-click="moreTopics()" flex>Load More</md-button>
+    </div>
+  </div>
+  <md-divider hide-xs hide-sm></md-divider>
+  <div class="columnMain" layout="column" flex-gt-md="50" flex="100" ng-cloak>
+    <md-tabs md-dynamic-height md-border-bottom ng-if="topicDetail != null">
+      <md-tab label="topic">
+        <div class="detail-header">
+          <h1>{{topicDetail.topicTitle}}</h1>
+          <span>On {{topicDetail.created_at | amDateFormat:'ddd, MMM Do YYYY, h:mm:ss a'}} In {{topicDetail.channelTitle}}</span>
+          <br/>
+        </div>
+        <br/>
+
+        <div ng-if="topicDetail.topicImg != 0" class="detail-banner">
+          <img src="{{topicDetail.topicImg}}"/>
+        </div>
+
+        <div class="custom-container" layout-padding>
+          <div class="detail-body">
+            <p markdown-to-html="topicDetail.topicBody"></p>
+          </div>
+        </div>
+      </md-tab>
+      <md-tab label="replies">
+        <div class="detail-header">
+          <h1>{{topicDetail.topicTitle}}</h1>
+          <span>On {{ topicDetail.created_at | amDateFormat:'ddd, MMM Do YYYY, h:mm:ss a'}} In {{topicDetail.channelTitle}}</span>
+          <br/>
+        </div>
+
+        <md-list>
+          <md-list-item class="listItem replyItem track by $index" ng-repeat="reply in replies" id="{{reply.id}}" ng-class="replyHash == reply.id ? 'activeReply' : ''" layout="row" layout-align="start start" layout-padding flex>
+            <img ng-src="{{reply.avatar}}" class="md-avatar" ui-sref="main.profile({profileName: reply.name})"/>
+            <div class="md-list-item-text" flex="100">
+              <p markdown-to-html="reply.replyBody" flex></p>
+              <span>
+                <strong ui-sref="main.profile({profileName: reply.name})">{{reply.displayName}}</strong>
+                &nbsp; - &nbsp;
+                {{reply.created_at | amCalendar}}
+                &nbsp; - &nbsp;
+                <!--<md-icon ng-if="authenticated == true" ng-click="makeReply(reply.id)" class="material-icons md-18">chat_bubble_outline</md-icon></md-button>
+                <md-icon ng-if="authenticated != true" ng-click="signInDialog()" class="material-icons md-18">chat_bubble_outline</md-icon></md-button>-->
+                <md-icon ng-click="featureReply(reply.id, 'reply')" ng-if="reply.replyFeature == '0'" class="material-icons md-18">star_border</md-icon>
+                <md-icon ng-click="featureReply(reply.id, 'reply')" ng-if="reply.replyFeature == '1'" class="material-icons md-18">star</md-icon>
+                <md-icon ng-if="reply.replyFlagged == 1" ng-click="unflag(reply.id, $index, 'reply')" class="material-icons md-18">warning</md-icon>
+                <md-icon ng-if="reply.replyApproved == 0" ng-click="approveReply(reply.id, $index, 'reply')" class="material-icons md-18">check</md-icon>
+                <md-icon ng-click="editReply(reply, $index, 'reply')" class="material-icons md-18">mode_edit</md-icon>
+                <md-icon ng-click="deleteReply(reply.id, $index, 'reply')" class="material-icons md-18">delete</md-icon>
+              </span>
+              <md-list-item class="listItem replyItem" ng-repeat="childReply in reply.childReplies" id="{{childReply.id}}" ng-class="replyHash == childReply.id ? 'activeReply' : ''" layout="row" layout-align="start start" layout-margin>
+                <img  ng-src="{{childReply.avatar}}" class="md-avatar" ui-sref="main.profile({profileName: childReply.name})"/>
+                <div class="md-list-item-text">
+                  <p markdown-to-html="childReply.replyBody" flex></p>
+                  <span>
+                    <strong ui-sref="main.profile({profileName: childReply.name})">{{childReply.displayName}}</strong>
+                    &nbsp; - &nbsp;
+                    {{childReply.created_at | amCalendar}}
+                    &nbsp; - &nbsp;
+                    <!--<md-icon ng-if="authenticated == true" ng-click="makeReply(reply.id)" class="material-icons md-18">chat_bubble_outline</md-icon></md-button>
+                    <md-icon ng-if="authenticated != true" ng-click="signInDialog()" class="material-icons md-18">chat_bubble_outline</md-icon></md-button>-->
+                    <md-icon ng-click="featureReply(childReply.id, 'childReply')" ng-if="childReply.replyFeature == '0'" class="material-icons md-18">star_border</md-icon>
+                    <md-icon ng-click="featureReply(childReply.id, 'childReply')" ng-if="childReply.replyFeature == '1'" class="material-icons md-18">star</md-icon>
+                    <md-icon ng-if="childReply.replyFlagged == 1" ng-click="unflag(childReply.id, $index, 'childReply')" class="material-icons md-18">warning</md-icon>
+                    <md-icon ng-if="childReply.replyApproved == 0" ng-click="approveReply(childReply.id, $index, 'childReply')" class="material-icons md-18">check</md-icon>
+                    <md-icon ng-click="editReply(childReply, $index, 'childReply')" class="material-icons md-18">mode_edit</md-icon>
+                    <md-icon ng-click="deleteReply(childReply.id, $index, 'childReply')" class="material-icons md-18">delete</md-icon>
+                  </span>
+                </div>
+              </md-list-item>
+            </div>
+          </md-list-item>
+        </md-list>
+      </md-tab>
+    </md-tabs>
+  </div>
+</div>
+
+
+<script type="text/ng-template" id="editTopic.html">
+  <md-bottom-sheet class="dashSheetContainer" ng-class="displayFull == true ? 'dashSheetFull' : ''">
+    <md-toolbar class="md-primary md-hue-1 footerMenu" hide-gt-md>
+      <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" aria-label="leftPane" ng-click="openLeftMenu()">
+          <md-icon class="materials-icon">keyboard_arrow_left</md-icon>
+        </md-button>
+        <span flex></span>
+        <md-button ng-click="closeSheet()" class="md-icon-button" md-ink-ripple="false"><md-icon class="materials-icon">close</md-icon></md-button>
+        <md-button ng-click="updateTopic(topicData.topicID, 'Draft')" class="md-icon-button" md-ink-ripple="false" ng-if="topicData.topicType != 'Audio' && topicData.topicType != 'Video'"><md-icon class="material-icons">save</md-icon></md-button>
+        <md-button ng-click="updateTopic(topicData.topicID, 'Published')" class="md-icon-button" md-ink-ripple="false" ng-if="topicData.topicType != 'Audio' && topicData.topicType != 'Video'"><md-icon class="materials-icon">check</md-icon></md-button>
+        <span flex></span>
+        <md-button class="md-icon-button" aria-label="rightPane" ng-click="openRightMenu()">
+          <md-icon class="materials-icon">keyboard_arrow_right</md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-sidenav class="md-sidenav-left md-whiteframe-4dp" md-component-id="left">
+      <div layout="column" layout-padding ng-show="topicData.topicType == 'Blog'">
+        <h2 class="content-h2">Topic Image</h2>
+        <md-divider></md-divider>
+        <div layout="row">
+          <input ngf-select="" class="ng-hide" ng-model="topicData.topicImg" id="makeTopicImg" ngf-accept="'image/*'" type="file" ngf-max-size="10MB"/>
+          <label for="makeTopicImg" class="md-button" flex><md-icon class="material-icons">add_a_photo</md-icon></label>
+        </div>
+        <img ng-if="topicData.topicImg && topicData.topicImg != 0" class="preview-image" ngf-src="topicData.topicImg" />
+      </div>
+    </md-sidenav>
+    <md-sidenav class="md-sidenav-right md-whiteframe-4dp" md-component-id="right">
+      <div layout="column" layout-padding>
+        <h2 class="content-h2">Topic Info</h2>
+        <md-divider></md-divider>
+        <md-input-container class="md-block">
+          <label>Topic Title</label>
+          <input ng-model="topicData.topicTitle">
+        </md-input-container>
+        <md-input-container>
+          <label>Channel</label>
+          <md-select ng-model="topicData.topicChannel">
+            <md-option ng-repeat="channelName in channelList" value="{{channelName.id}}">
+              {{channelName.channelTitle}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+        <div layout="column">
+          <md-checkbox ng-model="topicData.allowReplies" aria-label="allow replies" ng-true-value="1" ng-false-value="0">
+            Replies
+          </md-checkbox>
+          <md-checkbox ng-show="topicData.topicType == 'Blog'" ng-model="topicData.showImage" aria-label="show image" ng-true-value="1" ng-false-value="0">
+            Banner
+          </md-checkbox>
+        </div>
+      </div>
+    </md-sidenav>
+    <form layout="row" layout-sm="column" layout-padding>
+      <div layout="column" flex="20" hide-xs hide-sm ng-hide="displayFull">
+        <h2 class="content-h2">Topic Image</h2>
+        <md-divider></md-divider>
+        <input ngf-select="" class="ng-hide" ng-model="topicData.topicImg" id="makeTopicImg" ngf-accept="'image/*'" type="file" ngf-max-size="10MB"/>
+        <label for="makeTopicImg" class="md-button"><md-icon class="material-icons">add_a_photo</md-icon></label>
+        <img ng-if="topicData.topicImg && topicData.topicImg != 0" class="preview-image" ngf-src="topicData.topicImg" />
+      </div>
+      <md-divider hide-xs hide-sm ng-hide="displayFull"></md-divider>
+      <div layout="column" flex="20" hide-xs hide-sm ng-hide="displayFull">
+        <h2 class="content-h2">Topic Info</h2>
+        <md-divider></md-divider>
+        <md-input-container class="md-block">
+          <label>Topic Title</label>
+          <input ng-model="topicData.topicTitle">
+        </md-input-container>
+        <md-input-container>
+          <label>Channel</label>
+          <md-select ng-model="topicData.topicChannel">
+            <md-option ng-repeat="channelName in channelList" value="{{channelName.id}}">
+              {{channelName.channelTitle}}
+            </md-option>
+          </md-select>
+        </md-input-container>
+        <div layout="row">
+          <md-checkbox ng-model="topicData.allowReplies" aria-label="allow replies" ng-true-value="1" ng-false-value="0">
+            Replies
+          </md-checkbox>
+          <md-checkbox ng-model="topicData.showImage" aria-label="show image" ng-true-value="1" ng-false-value="0">
+            Banner
+          </md-checkbox>
+        </div>
+        <md-button ng-click="updateTopic(topicData.topicID, 'Published')"><md-icon class="material-icons">check</md-icon> Publish Topic</md-button>
+        <md-button ng-click="updateTopic(topicData.topicID, 'Draft')"><md-icon class="material-icons">save</md-icon> Save Draft</md-button>
+        <md-button ng-click="closeSheet()"><md-icon class="material-icons">close</md-icon> Close</md-button>
+      </div>
+      <md-divider hide-xs hide-sm ng-hide="displayFull"></md-divider>
+      <div layout="column" flex="100" flex-gt-md="60" ng-if="!displayFull">
+        <textarea ng-model="topicData.topicBody" placeholder="" autofocus="true"></textarea>
+      </div>
+      <div layout="row" flex="100" ng-if="displayFull">
+        <div layout="column" flex="50">
+          <textarea ng-model="topicData.topicBody" placeholder="" autofocus="true"></textarea>
+        </div>
+        <div ng-if="topicData.topicBody" class="topicPreview detail-body" markdown-to-html="topicData.topicBody" layout-padding flex="50"></div>
+      </div>
+      <div class="dashSheetOptions" hide-sm hide-md layout="row">
+        <md-button ng-if="displayFull == true" ng-click="closeSheet()" class="md-icon-button" md-ink-ripple="false" show-sm><md-icon class="materials-icon">close</md-icon></md-button>
+        <md-button ng-click="fullSheet()" class="md-icon-button" md-ink-ripple="false" hide-sm><md-icon class="materials-icon">fullscreen</md-icon></md-button>
+        <md-button ng-if="displayFull == true" ng-click="updateTopic(topicData.topicID, 'Draft')" class="md-icon-button" md-ink-ripple="false" show-sm><md-icon class="material-icons">save</md-icon></md-button>
+        <md-button ng-if="displayFull == true" ng-click="updateTopic(topicData.topicID, 'Published')" class="md-icon-button" md-ink-ripple="false" show-sm><md-icon class="materials-icon">check</md-icon></md-button>
+      </div>
+    </form>
+  </md-bottom-sheet>
+</script>
+
+<script type="text/ng-template" id="makeChannel.html">
+  <md-bottom-sheet class="dashSheetContainer">
+    <md-toolbar class="md-primary md-hue-1 footerMenu" hide-gt-md>
+      <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" aria-label="leftPane" ng-click="openLeftMenu()">
+          <md-icon class="materials-icon">keyboard_arrow_left</md-icon>
+        </md-button>
+        <span flex></span>
+        <md-button ng-click="closeSheet()" class="md-icon-button" md-ink-ripple="false"><md-icon class="materials-icon">close</md-icon></md-button>
+        <md-button ng-click="doChannel()" class="md-icon-button"  md-ink-ripple="false"><md-icon class="material-icons">check</md-icon></md-button>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+    <md-sidenav class="md-sidenav-left md-whiteframe-4dp" md-component-id="left">
+      <div layout="column" layout-padding>
+        <h2 class="content-h2">Channel Image</h2>
+        <md-divider></md-divider>
+        <input ngf-select="" class="ng-hide" ng-model="channelData.channelImg" id="makeChannelImg" ngf-accept="'image/*'" type="file" ngf-max-size="10MB"/>
+        <label for="makeChannelImg" class="md-button"><md-icon class="material-icons">add_a_photo</md-icon></label>
+        <img class="preview-image" ngf-src="channelData.channelImg" />
+      </div>
+    </md-sidenav>
+    <form layout="row" layout-align="center none" layout-padding>
+      <div layout="column" flex="50" flex-gt-md="20" hide-sm hide-xs>
+        <h2 class="content-h2">Channel Image</h2>
+        <md-divider></md-divider>
+        <input ngf-select="" class="ng-hide" ng-model="channelData.channelImg" id="makeChannelImg" ngf-accept="'image/*'" type="file" ngf-max-size="10MB"/>
+        <label for="makeChannelImg" class="md-button"><md-icon class="material-icons">add_a_photo</md-icon></label>
+        <img class="preview-image" ngf-src="channelData.channelImg" />
+      </div>
+      <div layout="column" flex="100" flex-gt-sm="30">
+        <h2 class="content-h2">Channel Info</h2>
+        <md-divider></md-divider>
+        <md-input-container class="md-block">
+          <label>Channel Title</label>
+          <input ng-model="channelData.channelTitle">
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label>Channel Description</label>
+          <input ng-model="channelData.channelDesc">
+        </md-input-container>
+        <md-button ng-click="doChannel()" hide-sm hide-xs><md-icon class="material-icons" >check</md-icon> Create Channel</md-button>
+        <md-button ng-click="closeSheet()" hide-sm hide-xs><md-icon class="material-icons">close</md-icon> Close</md-button>
+      </div>
+    </form>
+  </md-bottom-sheet>
+</script>
+
+<script type="text/ng-template" id="editChannel.html">
+  <md-bottom-sheet class="dashSheetContainer">
+    <md-toolbar class="md-primary md-hue-1 footerMenu" hide-gt-md>
+      <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" aria-label="leftPane" ng-click="openLeftMenu()">
+          <md-icon class="materials-icon">keyboard_arrow_left</md-icon>
+        </md-button>
+        <span flex></span>
+        <md-button ng-click="closeSheet()" class="md-icon-button" md-ink-ripple="false"><md-icon class="materials-icon">close</md-icon></md-button>
+        <md-button ng-click="updateChannel(channelData.channelID)" class="md-icon-button"  md-ink-ripple="false"><md-icon class="material-icons">check</md-icon></md-button>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+    <md-sidenav class="md-sidenav-left md-whiteframe-4dp" md-component-id="left">
+      <div layout="column" layout-padding>
+        <h2 class="content-h2">Channel Image</h2>
+        <md-divider></md-divider>
+        <input ngf-select="" class="ng-hide" ng-model="channelData.channelImg" id="editChannelImg" ngf-accept="'image/*'" type="file" ngf-max-size="10MB"/>
+        <label for="editChannelImg" class="md-button"><md-icon class="material-icons">add_a_photo</md-icon></label>
+        <img class="preview-image" ngf-src="channelData.channelImg" />
+      </div>
+    </md-sidenav>
+    <form layout="row" layout-align="center none" layout-padding>
+      <div layout="column" flex="50" flex-gt-md="20" hide-sm hide-xs>
+        <h2 class="content-h2">Channel Image</h2>
+        <md-divider></md-divider>
+        <input ngf-select="" class="ng-hide" ng-model="channelData.channelImg" id="editChannelImg" ngf-accept="'image/*'" type="file" ngf-max-size="10MB"/>
+        <label for="editChannelImg" class="md-button"><md-icon class="material-icons">add_a_photo</md-icon></label>
+        <img class="preview-image" ngf-src="channelData.channelImg" />
+      </div>
+      <div layout="column" flex="50" flex-gt-md="30">
+        <h2 class="content-h2">Channel Info</h2>
+        <md-divider></md-divider>
+        <md-input-container class="md-block">
+          <label>Channel Title</label>
+          <input ng-model="channelData.channelTitle">
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label>Channel Description</label>
+          <input ng-model="channelData.channelDesc">
+        </md-input-container>
+        <md-button ng-click="updateChannel(channelData.channelID)" hide-sm hide-xs><md-icon class="material-icons">check</md-icon> Edit Channel</md-button>
+        <md-button ng-click="closeSheet()" hide-sm hide-xs><md-icon class="material-icons">close</md-icon> Close</md-button>
+      </div>
+    </form>
+  </md-bottom-sheet>
+</script>
+
+<script type="text/ng-template" id="editReply.html">
+  <md-bottom-sheet layout="row" class="dashSheetContainer" ng-class="displayFull == true ? 'dashSheetFull' : ''">
+      <form layout="column" flex="50" flex-sm="100" layout-padding>
+        <textarea ng-model="replyData.replyBody" placeholder="" autofocus="true"></textarea>
+      </form>
+      <div class="replyPreview" ng-if="replyData.replyBody" markdown-to-html="replyData.replyBody" flex="50" layout-padding hide-sm hide-xs></div>
+      <div class="sheetOptions" layout="row">
+        <md-button ng-click="closeReply()" class="md-icon-button" md-ink-ripple="false"><md-icon class="materials-icon">close</md-icon></md-button>
+        <md-button ng-click="fullSheet()" class="md-icon-button" md-ink-ripple="false" hide-sm><md-icon class="materials-icon">fullscreen</md-icon></md-button>
+        <md-button ng-click="updateReply(replyData.replyID)" class="md-icon-button" md-ink-ripple="false"><md-icon class="materials-icon">check</md-icon></md-button>
+      </div>
+  </md-bottom-sheet>
+</script>

@@ -1,0 +1,66 @@
+<div class="Installcontainer">
+  <form>
+    <div class="logoBanner"></div>
+    <section id="intro">
+      <h1>Welcome</h1>
+      <md-divider></md-divider>
+      <p>Welcome to the easy ReMark installer! Be sure to check out the wiki for any questions you may have. Are you ready to be Remarkable? Great! Let's get started by filling in some information about your website.</p>
+    </section>
+    <section id="database">
+      <h1>Database</h1>
+      <md-divider></md-divider>
+      <div class="input-section" flex="40">
+        <md-input-container class="md-block">
+          <label>User</label>
+          <input ng-model="installData.databaseUser">
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label>Password</label>
+          <input type="password" ng-model="installData.databasePassword">
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label>Database</label>
+          <input ng-model="installData.databaseName">
+        </md-input-container>
+      </div>
+    </section>
+    <section id="info">
+      <h1>Info</h1>
+      <md-divider></md-divider>
+      <div class="input-section" flex="40">
+        <md-input-container class="md-block">
+          <label>Site Name</label>
+          <input ng-model="installData.siteName">
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label>Username</label>
+          <input ng-model="installData.adminName">
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label>Email</label>
+          <input ng-model="installData.adminEmail">
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label>Admin Password</label>
+          <input type="password" ng-model="installData.adminPassword">
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label>Confirm Password</label>
+          <input type="password" ng-model="installData.passwordConfirm">
+        </md-input-container>
+      </div>
+    </section>
+    <section id="conclusion">
+      <h1>Welcome</h1>
+      <md-divider></md-divider>
+      <p>Fantastic! Just go ahead and click the Install button below and you'll be ready to start blogging and publishing with ReMark. Be sure to check out the user guides if you're a first time Remarker.
+      <br/>
+      <br/>
+      Thanks for using ReMark!
+      </p>
+      <md-button ng-click="doInstall()" class="container-max">Install ReMark</md-button>
+    </section>
+    <footer>
+    </footer>
+  </form>
+</div>

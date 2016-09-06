@@ -1,0 +1,178 @@
+<div class="custom-container">
+  <div class="container">
+    <md-input-container class="md-block" flex-gt-sm>
+      <md-icon class="material-icons">search</md-icon>
+      <label>Search For Users</label>
+      <input ng-model="searchUser">
+    </md-input-container>
+  </div>
+  <div class="custom-container">
+    <div layout="row">
+      <md-button ng-click="addUser()"><md-icon class="material-icons">add</md-icon> User</md-button>
+      <md-button ng-click="addRole()"><md-icon class="material-icons">add</md-icon>Role</md-button>
+    </div>
+    <div layout="row" layout-padding>
+      <md-menu ng-repeat="role in roles track by $index">
+        <span ng-click="manage($mdOpenMenu, $event)" class="label">{{role.roleName}} <md-icon class="material-icons">keyboard_arrow_down</md-icon></span>
+        <md-menu-content width="2">
+          <md-menu-item>
+            <md-button ng-click="filterRole(role.id)">Filter</md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="editRole($event, role.id, $index)">Edit Role</md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="deleteRole(role.id, $index)">Delete Role</md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+    </div>
+  </div>
+  <md-divider></md-divider>
+  <div layout="row" layout-padding layout-align="left center" layout-wrap>
+    <div flex-gt-md="15" flex="50" flex-xs="100" ng-repeat="user in users | filter:searchUser track by $index">
+      <div class="user-block" layout="column" layout-align="center center">
+        <img src="{{user.avatar}}">
+        <h3 class="content-h2">{{user.displayName}}</h3>
+        <md-divider></md-divider>
+        <div class="userDetails" layout="column" layout-fill layout-padding layout-align="center stretch">
+          <span>{{user.name}}</span>
+          <span>{{user.roleName}}</span>
+          <span>{{user.topics}} Topics</span>
+          <span>{{user.replies}} Replies</span>
+        </div>
+        <md-divider></md-divider>
+        <md-menu>
+          <md-button ng-click="manage($mdOpenMenu, $event)">Edit</md-button>
+          <md-menu-content width="4">
+            <md-menu-item>
+              <md-button ng-click="editProfile($event, user.id, $index)">Edit Profile</md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="resetPassword(user.id)">Reset Password</md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="activateUser(user.id)">Activate | Deactivate</md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="setRole($event, user.id, $index)">Set Role</md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="banUser(user.id)">Ban | Unban</md-button>
+            </md-menu-item>
+            <md-menu-item>
+              <md-button ng-click="deleteUser(user.id, $index)">Delete</md-button>
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/ng-template" id="addUser.html">
+  <md-dialog class="addUser" aria-label="New User" ng-cloak>
+    <form>
+      <md-dialog-content>
+        <div layout="column" layout-wrap layout-padding>
+          <md-input-container class="md-icon-float">
+            <md-icon class="material-icons">person</md-icon>
+            <label>Display Name</label>
+            <input ng-model="user.name" type="text">
+          </md-input-container>
+          <md-input-container class="md-icon-float">
+            <md-icon class="material-icons">email</md-icon>
+            <label>Email</label>
+            <input ng-model="user.email" type="email">
+          </md-input-container>
+          <md-input-container class="md-icon-float">
+            <md-icon class="material-icons">lock</md-icon>
+            <label>Password</label>
+            <input ng-model="user.password" type="password">
+          </md-input-container>
+        </div>
+        <div class="md-dialog-actions" layout="row" flex layout-align="center center">
+          <md-button class="md-block" ng-click="doAddUser()">
+           Add User
+          </md-button>
+        </div>
+      </md-dialog-content>
+    </form>
+  </md-dialog>
+</script>
+
+<script type="text/ng-template" id="addRole.html">
+  <md-dialog class="addRole" aria-label="Add Role" ng-cloak>
+    <form>
+      <md-dialog-content>
+        <div layout="column" layout-wrap layout-padding>
+          <md-input-container class="md-icon-float">
+            <md-icon class="material-icons">group</md-icon>
+            <label>Role Name</label>
+            <input ng-model="role.name" type="text">
+          </md-input-container>
+          <md-input-container class="md-icon-float">
+            <md-icon class="material-icons">mode_edit</md-icon>
+            <label>Description</label>
+            <input ng-model="role.description" type="text">
+          </md-input-container>
+        </div>
+        <div class="md-dialog-actions" layout="row">
+          <md-button ng-click="dialogClose()">
+            Cancel
+          </md-button>
+          <md-button ng-click="doAddRole()">
+           Add Role
+          </md-button>
+        </div>
+      </md-dialog-content>
+    </form>
+  </md-dialog>
+</script>
+
+<script type="text/ng-template" id="editRole.html">
+  <md-dialog class="editRole" aria-label="Edit Role" ng-cloak>
+    <form>
+      <md-dialog-content>
+        <div layout="column" layout-wrap layout-padding>
+          <md-input-container class="md-icon-float">
+            <md-icon class="material-icons">group</md-icon>
+            <label>Role Name</label>
+            <input ng-model="role.roleName" type="text">
+          </md-input-container>
+          <md-input-container class="md-icon-float">
+            <md-icon class="material-icons">mode_edit</md-icon>
+            <label>Description</label>
+            <input ng-model="role.roleDesc" type="text">
+          </md-input-container>
+        </div>
+        <div class="md-dialog-actions" layout="row" layout-align="center center">
+          <md-button ng-click="doRoleEdit()">
+           Confirm
+          </md-button>
+        </div>
+      </md-dialog-content>
+    </form>
+  </md-dialog>
+</script>
+
+<script type="text/ng-template" id="setRole.html">
+  <md-dialog class="setRole" aria-label="Set Role" ng-cloak>
+    <form>
+      <md-dialog-content>
+        <div layout="column" layout-wrap layout-padding>
+          <md-select ng-model="profile.role" placeholder="Select Role">
+             <md-option ng-repeat="role in roles" value="{{role.id}}">
+               {{role.roleName}}
+             </md-option>
+           </md-select>
+        </div>
+        <div class="md-dialog-actions" layout="row" layout-align="center center">
+          <md-button ng-click="doSetRole()">
+           Confirm
+          </md-button>
+        </div>
+      </md-dialog-content>
+    </form>
+  </md-dialog>
+</script>

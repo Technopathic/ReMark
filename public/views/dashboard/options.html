@@ -1,0 +1,122 @@
+<div class="container">
+  <form>
+    <div layout="row" layout-align="end center">
+      <md-button ng-click="saveOptions()"><md-icon class="material-icons">check</md-icon> Save Settings</md-button>
+    </div>
+    <div layout="column" layout-padding>
+      <div id="websites">
+        <h2 class="content-h2">General</h2>
+        <md-divider></md-divider>
+        <div layout="row" layout-xs="column" layout-margin>
+          <div flex-gt-md="60" flex="100">
+            <div class="menuSelect">
+              <md-input-container class="md-block">
+                <label>Website Name</label>
+                <input ng-model="options.website">
+              </md-input-container>
+              <pre hide-xs>The name of your website. Will show up in the Navbar.</pre>
+            </div>
+            <div class="menuSelect">
+              <md-input-container class="md-block">
+                <label>About Website</label>
+                <input ng-model="options.aboutWebsite">
+              </md-input-container>
+              <pre hide-xs>A short description about your website.</pre>
+            </div>
+            <div class="menuSelect">
+              <md-input-container class="md-block">
+                <label>Website Logo</label>
+                <input ng-model="options.siteLogo">
+              </md-input-container>
+              <pre hide-xs>A logo for your website.</pre>
+            </div>
+            <br/>
+          </div>
+          <div flex-gt-md="40" flex="100">
+            <div class="menuSelect">
+              <md-checkbox ng-model="options.allowRegistration" aria-label="Allow Registration" ng-true-value="1" ng-false-value="0">
+                Allow Registration
+              </md-checkbox>
+              <pre hide-xs>Allow Users to sign up to your site.</pre>
+            </div>
+            <div class="menuSelect">
+              <md-checkbox ng-model="options.allowSubscription" aria-label="Allow Subscription" ng-true-value="1" ng-false-value="0">
+                Allow Subscription
+              </md-checkbox>
+              <pre hide-xs>Allow Users to Subscribe to your site.</pre>
+            </div>
+            <div class="menuSelect">
+              <md-checkbox ng-model="options.requireActivation" aria-label="Require Activation" ng-true-value="1" ng-false-value="0">
+                Require Activation
+              </md-checkbox>
+              <pre hide-xs>Requires Email Activation on Sign up.</pre>
+            </div>
+            <div class="menuSelect">
+              <md-checkbox ng-model="options.replyModeration" aria-label="Moderate Replies" ng-true-value="1" ng-false-value="0">
+                Moderate Replies
+              </md-checkbox>
+              <pre hide-xs>Allow Users to reply to topics.</pre>
+            </div>
+            <div class="menuSelect">
+              <md-checkbox ng-model="options.homeBanner" aria-label="Home Banner" ng-true-value="1" ng-false-value="0">
+                Show Home Banner?
+              </md-checkbox>
+              <pre hide-xs>Shows the banner on the Default home page.</pre>
+            </div>
+            <div class="menuSelect">
+              <md-checkbox ng-model="options.allowAsk" aria-label="Allow Ask" ng-true-value="1" ng-false-value="0">
+                Allow users to ask questions?
+              </md-checkbox>
+              <pre hide-xs>Adds an Ask/Contacts Page.</pre>
+            </div>
+            <div class="menuSelect">
+              <md-input-container class="md-block" flex-gt-sm>
+                <label>Set Homepage</label>
+                <md-select ng-model="options.homePage" class="md-block">
+                  <md-option value="0">Default</md-option>
+                  <md-option value="-2">Offline</md-option>
+                </md-select>
+              </md-input-container>
+              <pre hide-xs>Set offline</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="themes">
+        <div layout="row">
+          <h2 class="content-h2">Apps</h2>
+          <input ngf-select="" class="ng-hide" ng-model="appData.app" id="appFile" ngf-accept="'application/zip'" type="file" ngf-max-size="20MB"/>
+          <label for="appFile" class="md-button"><md-icon class="material-icons">add</md-icon> New App</label>
+          <md-button ng-show="appData.app != null" ng-click="uploadApp()">Upload {{appData.app.name}}</md-button>
+        </div>
+        <md-divider></md-divider>
+        <div layout="row" layout-xs="column" flex="20" flex-xs="100" flex-sm="100" flex-md="50" layout-margin>
+          <div class="appContainer" ng-repeat="app in apps" layout="column" layout-align="center center">
+            <span>
+              <img ng-src="{{app.appPreview}}"/>
+              <md-tooltip md-direction="bottom">
+                {{app.appDesc}}
+              </md-tooltip>
+            </span>
+            <h4>{{app.appName}}</h4>
+            <md-button ng-disabled="app.appActive == 1" ng-click="activateApp(app.id, $index)"><md-icon class="material-icons">check</md-icon> Activate</md-button>
+            <md-button ng-if="app.id != 1" ng-click="deleteApp(app.id, $index)"><md-icon class="material-icons">delete</md-icon> Delete</md-button>
+          </div>
+        </div>
+      </div>
+      <div id="about">
+        <h2 class="content-h2">About Remark</h2>
+        <md-divider></md-divider>
+        <div layout="column" layout-margin>
+          <p>ReMark is an open source publishing platform built with the content creator in mind. It works as:</p>
+          <ul>
+            <li>A blogging platform</li>
+            <li>A feed manager</li>
+            <li>An Image, Audio, and Video host.</li>
+          </ul>
+          <p>To learn more about ReMark and the goals of the project, please visit the <a href="http://github.com/Technopathic/ReMark">Github</a>.</p>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

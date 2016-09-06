@@ -1,0 +1,13 @@
+<div class="detail-header {{headerClass}}">
+  <h1>{{topic.topicTitle}}</h1>
+  <span>{{topic.created_at | amDateFormat:'ddd, MMM Do YYYY, h:mm:ss a'}} <span ng-if="topic.topicChannel != 1" >In {{topic.channelTitle}}</span></span>
+</div>
+
+<div ng-if="topic.showImage == 1"  class="detail-banner {{imageClass}}">
+  <img ng-if="topic.topicImg != 0" src="{{topic.topicImg}}"/>
+</div>
+
+
+<div class="container-min detail-body {{contentClass}}" layout-padding>
+  <p markdown-to-html="topic.topicBody"></p>
+</div>

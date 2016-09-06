@@ -1,0 +1,114 @@
+<div class="custom-container" layout-padding>
+  <md-tabs md-dynamic-height md-border-bottom>
+    <md-tab label="Overview">
+      <div layout="column">
+        <div layout="row" layout-sm="column" layout-xs="column" layout-padding layout-margin>
+
+          <div class="dash-block" flex-gt-sm="30" flex="100">
+            <div class="block-header">
+              <span>Welcome, {{currentUser.displayName}}!</span>
+            </div>
+            <div class="block-body">
+              <md-list>
+                <md-list-item ng-click="showNotifications($event, 'Alert')">
+                   <md-icon class="material-icons">notifications</md-icon><p>Alerts</p><md-badge class="md-secondary">{{notifications.alerts.length}}</md-badge>
+                </md-list-item>
+                <md-divider></md-divider>
+                <md-list-item ng-click="showNotifications($event, 'Message')">
+                  <md-icon class="material-icons">email</md-icon><p>Messages</p><md-badge class="md-secondary">{{notifications.messages.length}}</md-badge>
+                </md-list-item>
+                <md-divider></md-divider>
+                <md-list-item ng-click="showNotifications($event, 'Global')">
+                  <md-icon class="material-icons">public</md-icon><p>Global</p><md-badge class="md-secondary">{{notifications.globals.length}}</md-badge>
+                </md-list-item>
+              </md-list>
+            </div>
+          </div>
+
+          <div class="dash-block" flex-gt-sm="40" flex="100">
+            <div class="block-body">
+              <div class="block-content">
+                <img class="dashImage" src="img/dashpic.png"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-block scratchBlock" flex-gt-sm="30" flex="100">
+            <div class="block-header">
+              <span>Scratch Pad</span>
+            </div>
+            <div class="block-body">
+              <div class="block-content">
+                <textarea>
+
+                </textarea>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div layout="row" layout-sm="column" layout-xs="column" layout-padding layout-margin>
+
+          <div class="dash-block" flex-gt-sm flex="100">
+            <div class="block-header">
+              <span>Topics</span>
+            </div>
+            <div class="block-body">
+              <md-list>
+                <md-list-item ng-repeat="topic in topics" target="_blank" ui-sref="main.details({topicSlug:topic.topicSlug, topicID:topic.id})">
+                  <img ng-if="topic.topicThumbnail != 0" class="md-avatar" ng-src="{{topic.topicThumbnail}}">
+                  <div class="md-list-item-text">
+                    <span class="media-heading">{{topic.topicTitle}}</span>
+                  </div>
+                  <md-tooltip md-direction="right">
+                    Replies: {{topic.topicReplies}} | Views: {{topic.topicViews}}
+                  </md-tooltip>
+                  <md-divider ng-if="!$last"></md-divider>
+                </md-list-item>
+              </md-list>
+            </div>
+          </div>
+
+          <div class="dash-block" flex-gt-sm flex="100">
+            <div class="block-header">
+              <span>Replies</span>
+            </div>
+            <div class="block-body">
+                <md-list>
+                  <md-list-item ng-repeat="reply in replies" target="_blank" ui-sref="main.details({topicSlug:reply.topicSlug, topicID:reply.topicID, '#': reply.id})">
+                    <img class="md-avatar" ng-src="{{reply.avatar}}">
+                    <div class="md-list-item-text">
+                      <span markdown-to-html="reply.replyBody"></span>
+                    </div>
+                    <md-divider ng-if="!$last"></md-divider>
+                  </md-list-item>
+                </md-list>
+            </div>
+            <div class="block-footer"></div>
+          </div>
+
+          <div class="dash-block" flex-gt-sm flex="100">
+            <div class="block-header">
+              <span>Visitors</span>
+            </div>
+            <div class="block-body">
+              <md-list>
+                <md-list-item ng-repeat="user in users" target="_blank" ui-sref="main.profile({profileName: user.name})">
+                  <img class="md-avatar" ng-src="{{user.avatar}}">
+                  <div class="md-list-item-text">
+                    <span class="media-heading">{{user.name}}</span>
+                  </div>
+                  <md-tooltip md-direction="right">
+                    Replies: {{user.replies}}
+                  </md-tooltip>
+                  <md-divider ng-if="!$last"></md-divider>
+                </md-list-item>
+              </md-list>
+            </div>
+          </div>
+        </div>
+      </div>
+    </md-tab>
+  </md-tabs>
+</div>

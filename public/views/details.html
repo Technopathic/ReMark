@@ -1,0 +1,22 @@
+<detail headerClass="" imageClass="" audioClass="" videoClass="" contentClass=""></detail>
+
+<div class="container-min" layout="column">
+  <stats statsClass="detailStats" statsTextClass="statText"></stats>
+  <author authorClass="detailAuthor"></author>
+</div>
+
+<md-divider class="custom-container"></md-divider>
+<div class="custom-container" layout="row" layout-padding hide-sm hide-xs>
+  <div layout="column" flex="100" flex-gt-sm="33" ng-repeat="topic in related">
+    <div class="post-box" ng-style="{'background-image':'url({{topic.topicThumbnail}})'}" ui-sref="main.details({topicSlug:topic.topicSlug, topicID:topic.id})" layout="column">
+      <span flex></span>
+      <div class="post-details" layout="row" layout-align="start end">
+        <h3>{{topic.topicTitle}}</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <replies replyClass=""></replies>
+</div>
