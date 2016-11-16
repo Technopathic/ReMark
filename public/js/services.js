@@ -58,6 +58,10 @@ angular.module('remark.services', [])
     return $http.jsonp('dashboard/notifications?token='+ query +'&callback=JSON_CALLBACK');
   };
 
+  this.getFeeds = function(query) {
+    return $http.jsonp('dashboard/getFeeds?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK');
+  };
+
 }])
 
 .service('dashboardContentStart', ['$http', '$rootScope', function($http, $rootScope) {

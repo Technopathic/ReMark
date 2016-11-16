@@ -9,6 +9,7 @@
         "laravel/framework": "5.2.*",
         "tymon/jwt-auth": "0.5.*",
         "intervention/image": "^2.3",
+        "fabpot/goutte": "^3.1",
         "mews/purifier": "^2.0",
         "graham-campbell/markdown": "^6.1",
         "league/html-to-markdown": "^4.2"

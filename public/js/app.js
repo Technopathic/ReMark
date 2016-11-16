@@ -137,6 +137,9 @@ angular.module('remark', ['ui.router', 'angular-loading-bar', 'angularMoment', '
       }],
       notificationData: ['dashboardHomeStart', '$rootScope', function(dashboardHomeStart, $rootScope) {
           return dashboardHomeStart.getNotifications($rootScope.currentToken);
+      }],
+      feedData: ['dashboardHomeStart', '$rootScope', function(dashboardHomeStart, $rootScope) {
+        return dashboardHomeStart.getFeeds($rootScope.currentToken);
       }]
     }
   })

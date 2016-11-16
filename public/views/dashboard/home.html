@@ -1,114 +1,229 @@
 <div class="custom-container" layout-padding>
-  <md-tabs md-dynamic-height md-border-bottom>
-    <md-tab label="Overview">
-      <div layout="column">
-        <div layout="row" layout-sm="column" layout-xs="column" layout-padding layout-margin>
+  <div ng-show="loadFeed === null">
+    <md-tabs md-dynamic-height md-border-bottom>
+      <md-tab label="Overview">
+        <div layout="column">
+          <div layout="row" layout-sm="column" layout-xs="column" layout-padding layout-margin>
 
-          <div class="dash-block" flex-gt-sm="30" flex="100">
-            <div class="block-header">
-              <span>Welcome, {{currentUser.displayName}}!</span>
-            </div>
-            <div class="block-body">
-              <md-list>
-                <md-list-item ng-click="showNotifications($event, 'Alert')">
-                   <md-icon class="material-icons">notifications</md-icon><p>Alerts</p><md-badge class="md-secondary">{{notifications.alerts.length}}</md-badge>
-                </md-list-item>
-                <md-divider></md-divider>
-                <md-list-item ng-click="showNotifications($event, 'Message')">
-                  <md-icon class="material-icons">email</md-icon><p>Messages</p><md-badge class="md-secondary">{{notifications.messages.length}}</md-badge>
-                </md-list-item>
-                <md-divider></md-divider>
-                <md-list-item ng-click="showNotifications($event, 'Global')">
-                  <md-icon class="material-icons">public</md-icon><p>Global</p><md-badge class="md-secondary">{{notifications.globals.length}}</md-badge>
-                </md-list-item>
-              </md-list>
-            </div>
-          </div>
-
-          <div class="dash-block" flex-gt-sm="40" flex="100">
-            <div class="block-body">
-              <div class="block-content">
-                <img class="dashImage" src="img/dashpic.png"/>
+            <div class="dash-block" flex-gt-sm="30" flex="100">
+              <div class="block-header">
+                <span>Welcome, {{currentUser.displayName}}!</span>
               </div>
-            </div>
-          </div>
-
-          <div class="dash-block scratchBlock" flex-gt-sm="30" flex="100">
-            <div class="block-header">
-              <span>Scratch Pad</span>
-            </div>
-            <div class="block-body">
-              <div class="block-content">
-                <textarea>
-
-                </textarea>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <div layout="row" layout-sm="column" layout-xs="column" layout-padding layout-margin>
-
-          <div class="dash-block" flex-gt-sm flex="100">
-            <div class="block-header">
-              <span>Topics</span>
-            </div>
-            <div class="block-body">
-              <md-list>
-                <md-list-item ng-repeat="topic in topics" target="_blank" ui-sref="main.details({topicSlug:topic.topicSlug, topicID:topic.id})">
-                  <img ng-if="topic.topicThumbnail != 0" class="md-avatar" ng-src="{{topic.topicThumbnail}}">
-                  <div class="md-list-item-text">
-                    <span class="media-heading">{{topic.topicTitle}}</span>
-                  </div>
-                  <md-tooltip md-direction="right">
-                    Replies: {{topic.topicReplies}} | Views: {{topic.topicViews}}
-                  </md-tooltip>
-                  <md-divider ng-if="!$last"></md-divider>
-                </md-list-item>
-              </md-list>
-            </div>
-          </div>
-
-          <div class="dash-block" flex-gt-sm flex="100">
-            <div class="block-header">
-              <span>Replies</span>
-            </div>
-            <div class="block-body">
+              <div class="block-body">
                 <md-list>
-                  <md-list-item ng-repeat="reply in replies" target="_blank" ui-sref="main.details({topicSlug:reply.topicSlug, topicID:reply.topicID, '#': reply.id})">
-                    <img class="md-avatar" ng-src="{{reply.avatar}}">
+                  <md-list-item ng-click="showNotifications($event, 'Alert')">
+                     <md-icon class="material-icons">notifications</md-icon><p>Alerts</p><md-badge class="md-secondary">{{notifications.alerts.length}}</md-badge>
+                  </md-list-item>
+                  <md-divider></md-divider>
+                  <md-list-item ng-click="showNotifications($event, 'Message')">
+                    <md-icon class="material-icons">email</md-icon><p>Messages</p><md-badge class="md-secondary">{{notifications.messages.length}}</md-badge>
+                  </md-list-item>
+                  <md-divider></md-divider>
+                  <md-list-item ng-click="showNotifications($event, 'Global')">
+                    <md-icon class="material-icons">public</md-icon><p>Global</p><md-badge class="md-secondary">{{notifications.globals.length}}</md-badge>
+                  </md-list-item>
+                </md-list>
+              </div>
+            </div>
+
+            <div class="dash-block" flex-gt-sm="40" flex="100">
+              <div class="block-body">
+                <div class="block-content">
+                  <img class="dashImage" src="img/dashpic.png"/>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-block scratchBlock" flex-gt-sm="30" flex="100">
+              <div class="block-header">
+                <span>Scratch Pad</span>
+              </div>
+              <div class="block-body">
+                <div class="block-content">
+                  <textarea>
+
+                  </textarea>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div layout="row" layout-sm="column" layout-xs="column" layout-padding layout-margin>
+
+            <div class="dash-block" flex-gt-sm flex="100">
+              <div class="block-header">
+                <span>Topics</span>
+              </div>
+              <div class="block-body">
+                <md-list>
+                  <md-list-item ng-repeat="topic in topics" target="_blank" ui-sref="main.details({topicSlug:topic.topicSlug, topicID:topic.id})">
+                    <img ng-if="topic.topicThumbnail != 0" class="md-avatar" ng-src="{{topic.topicThumbnail}}">
                     <div class="md-list-item-text">
-                      <span markdown-to-html="reply.replyBody"></span>
+                      <span class="media-heading">{{topic.topicTitle}}</span>
                     </div>
+                    <md-tooltip md-direction="right">
+                      Replies: {{topic.topicReplies}} | Views: {{topic.topicViews}}
+                    </md-tooltip>
                     <md-divider ng-if="!$last"></md-divider>
                   </md-list-item>
                 </md-list>
+              </div>
             </div>
-            <div class="block-footer"></div>
-          </div>
 
-          <div class="dash-block" flex-gt-sm flex="100">
-            <div class="block-header">
-              <span>Visitors</span>
+            <div class="dash-block" flex-gt-sm flex="100">
+              <div class="block-header">
+                <span>Replies</span>
+              </div>
+              <div class="block-body">
+                  <md-list>
+                    <md-list-item ng-repeat="reply in replies" target="_blank" ui-sref="main.details({topicSlug:reply.topicSlug, topicID:reply.topicID, '#': reply.id})">
+                      <img class="md-avatar" ng-src="{{reply.avatar}}">
+                      <div class="md-list-item-text">
+                        <span markdown-to-html="reply.replyBody"></span>
+                      </div>
+                      <md-divider ng-if="!$last"></md-divider>
+                    </md-list-item>
+                  </md-list>
+              </div>
+              <div class="block-footer"></div>
             </div>
-            <div class="block-body">
-              <md-list>
-                <md-list-item ng-repeat="user in users" target="_blank" ui-sref="main.profile({profileName: user.name})">
-                  <img class="md-avatar" ng-src="{{user.avatar}}">
-                  <div class="md-list-item-text">
-                    <span class="media-heading">{{user.name}}</span>
-                  </div>
-                  <md-tooltip md-direction="right">
-                    Replies: {{user.replies}}
-                  </md-tooltip>
-                  <md-divider ng-if="!$last"></md-divider>
-                </md-list-item>
-              </md-list>
+
+            <div class="dash-block" flex-gt-sm flex="100">
+              <div class="block-header">
+                <span>Visitors</span>
+              </div>
+              <div class="block-body">
+                <md-list>
+                  <md-list-item ng-repeat="user in users" target="_blank" ui-sref="main.profile({profileName: user.name})">
+                    <img class="md-avatar" ng-src="{{user.avatar}}">
+                    <div class="md-list-item-text">
+                      <span class="media-heading">{{user.name}}</span>
+                    </div>
+                    <md-tooltip md-direction="right">
+                      Replies: {{user.replies}}
+                    </md-tooltip>
+                    <md-divider ng-if="!$last"></md-divider>
+                  </md-list-item>
+                </md-list>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </md-tab>
-  </md-tabs>
+      </md-tab>
+
+      <md-tab label="My Feeds">
+        <div layout="row" layout-sm="column" layout-xs="column" layout-wrap layout-padding>
+          <div flex="100" flex-gt-sm="25" ng-repeat="feed in feeds" ng-click="selectFeed(feed.id)">
+            <md-card class="feedBox">
+              <div class="feedImage" layout="column" layout-align="center center">
+                <img ng-src="{{feed.feedImg}}" class="md-card-image">
+              </div>
+              <md-tooltip>
+                {{feed.feedUrl}}
+              </md-tooltip>
+            </md-card>
+          </div>
+        </div>
+      </md-tab>
+
+      <md-tab label="Catalogue" md-on-select="getCatalogue()">
+        <div layout="row" layout-sm="column" layout-xs="column" layout-wrap layout-padding>
+          <div flex="100" flex-gt-sm="25" ng-repeat="cat in catalogue" ng-click="runFeed($event, cat.pluginLink, cat.input)">
+            <md-card class="feedBox">
+              <div class="feedImage" layout="column" layout-align="center center">
+                <img ng-src="{{cat.icon}}" class="md-card-image">
+              </div>
+              <md-tooltip>
+                {{cat.title}}
+              </md-tooltip>
+            </md-card>
+          </div>
+        </div>
+      </md-tab>
+
+      <md-tab label="Bookmarks" md-on-select="getBookmarks()">
+        <div layout="row" layout-sm="column" layout-xs="column" layout-wrap>
+          <div flex="100" flex-gt-sm="25" ng-repeat="bookmark in bookmarks.data" ng-click="viewFeed(bookmark.feedID, bookmark.bookmarkSource)">
+            <md-card class="feedBox">
+              <md-card-header>
+                <md-card-avatar>
+                  <md-icon class="md-avatar-icon"><img ng-src="http://www.google.com/s2/favicons?domain={{bookmark.bookmarkDomain}}"/></md-icon>
+                </md-card-avatar>
+                <md-card-header-text>
+                  <span class="md-title" ng-click="viewFeed(bookmark.feedID, bookmark.bookmarkSource)">{{bookmark.bookmarkTitle}}</span>
+                  <span class="md-subhead">{{bookmark.bookmarkAuthor}}</span>
+                </md-card-header-text>
+              </md-card-header>
+              <div class="feedImage" layout="column" layout-align="center center" ng-click="viewFeed(bookmark.feedID, bookmark.bookmarkSource)">
+                <img ng-if="bookmark.bookmarkImg != undefined" ng-src="{{bookmark.bookmarkImg}}" class="md-card-image">
+              </div>
+              <md-divider></md-divider>
+              <md-card-actions layout="row" layout-align="end center">
+                <md-button target="_blank" ng-href="{{bookmark.bookmarkSource}}">View</md-button>
+                <md-button class="md-icon-button" aria-label="Unbookmark Feed" ng-click="unBookmarkFeed(bookmark.id, $index)"><md-icon class="material-icons">bookmark</md-icon></md-button>
+              </md-card-actions>
+            </md-card>
+          </div>
+        </div>
+        <div class="paginationButtons" layout="row" layout-align="center center">
+          <md-button ng-if="bookmarks.current_page != 1" ng-click="getBookmarks(bookmarks.current_page - 1)"><md-icon class="material-icons">keyboard_arrow_left</md-icon> Previous</md-button>
+          <md-button ng-if="bookmarks.current_page < bookmarks.last_page" ng-click="getBookmarks(bookmarks.current_page + 1)">Next <md-icon class="material-icons">keyboard_arrow_right</md-icon></md-button>
+        </div>
+      </md-tab>
+    </md-tabs>
+  </div>
+
+  <div class="feedLayout" ng-if="loadFeed !== null">
+    <md-tabs md-dynamic-height md-border-bottom>
+      <md-tab label="Go Back" md-on-select="goBack()"></md-tab>
+      <md-tab label="Delete" md-on-select="deleteFeed(loadFeed.feed.id)"></md-tab>
+      <md-tab label="{{loadFeed.feed.feedName}}" md-active="true">
+        <div layout="row" layout-sm="column" layout-xs="column" layout-wrap>
+          <div flex="100" flex-gt-sm="25" ng-repeat="feed in loadFeed.result track by $index">
+            <md-card class="feedSelectBox" ng-href="{{loadFeed.options.prependLinks}}{{feed.link}}">
+              <md-card-header>
+                <md-card-avatar>
+                  <md-icon class="md-avatar-icon"><img ng-src="http://www.google.com/s2/favicons?domain={{loadFeed.feed.feedUrl}}"/></md-icon>
+                </md-card-avatar>
+                <md-card-header-text>
+                  <span class="md-title">{{feed.title}}</span>
+                  <span class="md-subhead">{{feed.author}}</span>
+                </md-card-header-text>
+              </md-card-header>
+              <div ng-if="feed.media != ''" class="feedSelectImage" layout="column" layout-align="center center">
+                <img ng-if="feed.media != undefined" ng-src="{{feed.media}}" class="md-card-image">
+              </div>
+              <p class="feedSelectImage" ng-if="feed.media == '' && feed.content != ''" layout-padding>{{feed.content}}</p>
+              <md-divider></md-divider>
+              <md-card-actions layout="row" layout-align="end center">
+                <md-button target="_blank" ng-if="loadFeed.options.prependLinks" ng-href="{{loadFeed.options.prependLinks}}{{feed.link}}">View</md-button>
+                <md-button target="_blank" ng-if="!loadFeed.options.prependLinks" ng-href="{{feed.link}}">View</md-button>
+                <md-button class="md-icon-button" aria-label="Bookmark Feed" ng-click="bookmarkFeed($index)"><md-icon class="material-icons">bookmark</md-icon></md-button>
+                <md-button class="md-icon-button" aria-label="Reply Feed" ng-click="replyFeed(feed, loadFeed.options)"><md-icon class="material-icons">reply</md-icon></md-button>
+              </md-card-actions>
+            </md-card>
+          </div>
+        </div>
+      </md-tab>
+    </md-tabs>
+  </div>
 </div>
+
+
+<script type="text/ng-template" id="showCustomFeed.html">
+  <md-dialog aria-label="Feed Url" flex="50">
+    <div layout="column" layout-padding>
+      <md-dialog-content>
+        <md-input-container md-no-float class="md-block">
+          <input ng-model="customFeedUrl" placeholder="Custom URL">
+        </md-input-container>
+        <div class="md-dialog-actions" layout="column" layout-align="center center">
+          <md-button ng-click="customFeed()" flex="100">
+            Get Feed
+          </md-button>
+        </div>
+      </md-dialog-content>
+    </div>
+  </md-dialog>
+</script>

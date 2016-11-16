@@ -192,11 +192,16 @@ angular.module('remark.dashboard', [])
   $scope.getMessage();
 }])
 
-.controller('DashboardHomeCtrl', ['$scope', '$rootScope', '$state', '$http', '$mdDialog', '$mdBottomSheet', 'homeData', 'notificationData', function($scope, $rootScope, $state, $http, $mdDialog, $mdBottomSheet, homeData, notificationData) {
+.controller('DashboardHomeCtrl', ['$scope', '$rootScope', '$state', '$http', '$mdDialog', '$mdBottomSheet', 'homeData', 'notificationData', 'feedData', function($scope, $rootScope, $state, $http, $mdDialog, $mdBottomSheet, homeData, notificationData, feedData) {
 
   $scope.replies = homeData.data.replies;
   $scope.topics = homeData.data.topics;
   $scope.users = homeData.data.users;
+  $scope.feeds = feedData.data;
+  $scope.catalogue = {};
+  $scope.bookmarks = {};
+
+  $scope.loadFeed = null;
 
   $scope.notifications = {
     alerts: notificationData.data.alerts,
@@ -214,6 +219,201 @@ angular.module('remark.dashboard', [])
       locals: {showType:type},
       controller: 'NotificationsCtrl'
     })
+  };
+
+
+  $scope.getCatalogue = function() {
+    $http.jsonp('dashboard/getCatalogue?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    .success(function (data){
+      $scope.catalogue = data;
+    });
+  };
+
+  $scope.getBookmarks = function() {
+    $http.jsonp('dashboard/getBookmarks?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    .success(function (data){
+      $scope.bookmarks = data;
+    });
+  };
+
+  $scope.runFeed = function(ev, feed, input = "false") {
+    if(input == "true" )
+    {
+      $mdDialog.show({
+        templateUrl: 'showCustomFeed.html',
+        parent: angular.element(document.body),
+        targetEvent: ev,
+        clickOutsideToClose:true,
+        locals: {feed: feed, input: input},
+        scope: $scope.$new(),
+        preserveScope: true,
+        controller:
+          function($scope, $rootScope, $mdDialog, $mdToast, feed, input) {
+            $scope.customFeedUrl = null;
+            var feed = feed;
+            var input = input
+            $scope.closeDialog = function() {
+              $mdDialog.hide();
+            };
+            $scope.customFeed = function() {
+              $http({
+                  method: 'POST',
+                  url: 'dashboard/runFeed?token='+$rootScope.currentToken,
+                  data: { feed: feed, input:input, custom:$scope.customFeedUrl },
+                  headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+              }).success(function (data){
+                if(data != 2 && data != 0 && data != 403)
+                {
+                  $scope.notifyToast('Feed Installed.');
+                  $scope.feeds.push(data);
+                  $scope.closeDialog();
+                }
+                else if(data == 2)
+                {
+                  $scope.notifyToast('Feed already installed.');
+                }
+                else if(data == 0)
+                {
+                  $scope.notifyToast('Not a valid Feed.');
+                }
+              }).error(function() {
+                $mdToast.show(
+                  $mdToast.simple()
+                    .textContent("Not a valid URL.")
+                    .position('bottom left')
+                    .hideDelay(3000)
+                );
+              });
+            };
+          }
+      })
+    }
+    else {
+      $http({
+          method: 'POST',
+          url: 'dashboard/runFeed?token='+$rootScope.currentToken,
+          data: { feed: feed, input:input, custom:"" },
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+      }).success(function(data){
+        if(data != 2 && data != 0 && data != 403)
+        {
+          $scope.notifyToast('Feed Installed.');
+          $scope.feeds.push(data);
+        }
+        else if(data == 2)
+        {
+          $scope.notifyToast('Feed already installed.');
+        }
+        else if(data == 0)
+        {
+          $scope.notifyToast('Not a valid Feed.');
+        }
+      }).error(function(data) {
+        $scope.notifyToast('Feed unable to be Installed');
+      });
+    }
+  };
+
+  $scope.selectFeed = function(id) {
+    $http.jsonp('dashboard/selectFeed/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    .success(function (data){
+      $scope.loadFeed = data;
+    });
+  };
+
+  $scope.deleteFeed = function(id) {
+    $http({
+      method: 'POST',
+      url: 'dashboard/deleteFeed?token='+$rootScope.currentToken,
+      data: {id:id},
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }).success(function(data){
+      $scope.notifyToast('Feed deleted');
+      $scope.goBack();
+      angular.forEach($scope.feeds, function(value, key) {
+        if(value.id == id)
+        {
+          $scope.feeds.splice(key, 1);
+        }
+      })
+    })
+  };
+
+  $scope.getBookmarks = function(page = 1) {
+    $http.jsonp('dashboard/getBookmarks?page='+page+'&token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    .success(function (data){
+      $scope.bookmarks = data;
+    });
+  };
+
+  $scope.bookmarkFeed = function(index) {
+    angular.forEach($scope.loadFeed.result, function(value, key) {
+      if(index === key)
+      {
+        $http({
+            method: 'POST',
+            url: 'dashboard/bookmarkFeed?token='+$rootScope.currentToken,
+            data: { feedID: $scope.loadFeed.feed.id, bookmarkDomain: $scope.loadFeed.feed.feedUrl, bookmarkTitle: value.title , bookmarkImg: value.media, bookmarkAuthor: value.author , bookmarkSource: value.link  },
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).success(function(data){
+          if(data == 1)
+          {
+            $scope.notifyToast('Feed Bookmarked!');
+          } else {
+            $scope.notifyToast('Feed unbookmarked.');
+            $scope.bookmarks.data.splice(index, 1);
+          }
+        });
+      }
+    });
+  };
+
+  $scope.unBookmarkFeed = function(id, index) {
+    $http({
+        method: 'POST',
+        url: 'dashboard/unBookmarkFeed?token='+$rootScope.currentToken,
+        data: { id: id  },
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }).success(function(data){
+      if(data == 1)
+      {
+        $scope.notifyToast('Feed unbookmarked!');
+        $scope.bookmarks.data.splice(index, 1);
+      }
+    });
+  };
+
+  $scope.goBack = function() {
+    $scope.loadFeed = null;
+  };
+
+  $scope.replyFeed = function(feed, options) {
+    if(options.prependMedia)
+    {
+      feed.media = options.prependMedia+feed.media;
+    }
+    if(options.prependLinks)
+    {
+      feed.link = options.prependLinks+feed.link;
+    }
+    var feedTitle = feed.title.replace(/["']/g, "");
+    var feedAuthor = feed.author.replace(/["']/g, "");
+    var topicBody = "<div class='uniBox' layout='row' layout-margin ng-href='"+feed.link+"'><img src='"+feed.media+"' flex-sm='10' flex-gt-sm='10'/><div layout='column' flex-sm='10' flex-gt-sm='80'><h2>"+feedTitle+"</h2><span>"+feedAuthor+"</span></div></div>";
+
+    $scope.topicDetail = {
+      topicTitle: "Re: "+feed.title,
+      topicBody: topicBody,
+      topicImg: feed.media,
+      topicStatus: "",
+    };
+    $mdBottomSheet.show({
+      templateUrl: 'makeTopic.html',
+      scope: $scope.$new(),
+      escapeToClose: true,
+      clickOutsideToClose: true,
+      locals: {topicData: {data:$scope.topicDetail}, channelData: {data:""}, replyData:{data:""}},
+      controller: 'ContentSheetCtrl'
+    });
   };
 
 }])

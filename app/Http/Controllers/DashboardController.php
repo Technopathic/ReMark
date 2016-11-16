@@ -24,6 +24,8 @@ use \Session;
 use \Redirect;
 use \DB;
 use \ZipArchive;
+use Goutte\Client;
+use Symfony\Component\DomCrawler\Crawler;
 use \File;
 use \Artisan;
 
@@ -119,6 +121,410 @@ class DashboardController extends Controller
       return Response::json(1)->setCallback($request->input('callback'));
     }
     else {
+      return Response::json(403)->setCallback($request->input('callback'));
+    }
+  }
+
+  public function getCatalogue(Request $request)
+  {
+    $user = Auth::user();
+    if($user->role == 1)
+    {
+      $masterDir = base_path().'/storage/feeds/master';
+      $master = file_get_contents('https://github.com/Technopathic/ReMark-Feeds/archive/master.zip');
+      $masterFile = fopen($masterDir.'/master.zip', 'w+');
+      fwrite($masterFile, $master);
+      fclose($masterFile);
+      $zip = new ZipArchive;
+      if($zip->open($masterDir.'/master.zip') === true) {
+        $zip->extractTo($masterDir);
+        $zip->close();
+      }
+      unlink($masterDir.'/master.zip');
+
+      $masterData = file_get_contents($masterDir.'/ReMark-Feeds-master/master.json');
+      $masterData = json_decode($masterData, true);
+
+      $version = $masterData['Version'];
+      $option = Option::find(1);
+      $option->feedVer = $version;
+      $option->save();
+      return Response::json($masterData['contents'])->setCallback($request->input('callback'));
+    }
+    else {
+      return Response::json(403)->setCallback($request->input('callback'));
+    }
+  }
+
+  public function runFeed(Request $request)
+  {
+    $auth = Auth::user();
+
+    if($auth->role == 1)
+    {
+      $rules = array(
+        'feed' => 'required',
+        'input' => 'required'
+      );
+      $validator = Validator::make($request->json()->all(), $rules);
+
+      if ($validator->fails()) {
+          return Response::json(0)->setCallback($request->input('callback'));
+      } else {
+
+        $link = $request->json('feed');
+        $input = $request->json('input');
+        $custom = $request->json('custom');
+
+        $feedDir = base_path().'/storage/feeds/installed';
+        $feed = file_get_contents($link);
+        $feedFile = fopen($feedDir.'/temp.zip', 'w+');
+        fwrite($feedFile, $feed);
+        fclose($feedFile);
+        $zip = new ZipArchive;
+        if($zip->open($feedDir.'/temp.zip') === true) {
+          $zip->extractTo($feedDir);
+          $dir = trim($zip->getNameIndex(0), '/');
+          $zip->close();
+        }
+
+        unlink($feedDir.'/temp.zip');
+
+        $feedData = file_get_contents($feedDir.'/'.$dir.'/feed.json');
+        $feedData = json_decode($feedData, true);
+
+        $check = Feed::where('feedName', '=', $feedData['info']['title'])->first();
+        if(!empty($check) && $input == false)
+        {
+          return Response::json(2)->setCallback($request->input('callback'));
+        }
+        else {
+          $data = new Feed;
+
+          if($input == true && !empty($custom)) {
+            $data->feedUrl = $custom;
+          } else {
+            $data->feedURL = $feedData['info']['source'];
+          }
+          $data->feedName = $feedData['info']['title'];
+          $data->feedTags = $feedData['info']['tags'];
+          $data->feedDesc = $feedData['info']['description'];
+          $data->feedImg = $feedData['info']['icon'];
+          if(!empty($feedData['info']['type']))
+          {
+            $data->feedType = $feedData['info']['type'];
+          }
+          if(!empty($feedData['info']['api']))
+          {
+            $data->feedAPI = $feedData['info']['api'];
+          }
+          $data->feedLoc = $feedDir.'/'.$dir;
+          $data->save();
+
+          $feedData = Feed::where('id', '=', $data->id)->select('id', 'feedUrl', 'feedName', 'feedTags', 'feedImg', 'feedLoc', 'created_at')->first();
+          return Response::json($feedData)->setCallback($request->input('callback'));
+        }
+      }
+    } else {
+      return Response::json(403)->setCallback($request->input('callback'));
+    }
+  }
+
+  public function getFeeds(Request $request)
+  {
+    $user = Auth::user();
+    if($user->role == 1)
+    {
+      $feeds = Feed::select('id', 'feedUrl', 'feedName', 'feedTags', 'feedImg', 'feedLoc', 'created_at')->get();
+
+      return Response::json($feeds)->setCallback($request->input('callback'));
+    }
+    else {
+      return Response::json(403)->setCallback($request->input('callback'));
+    }
+  }
+
+  public function selectFeed(Request $request, $id)
+  {
+    $user = Auth::user();
+
+    if($user->role == 1)
+    {
+      $feed = Feed::find($id);
+
+      $data = file_get_contents($feed->feedLoc.'/feed.json');
+      $data = json_decode($data, true);
+
+      $result = array();
+
+      if($feed->feedType == 'normal')
+      {
+        $client = new Client();
+        $guzzle = $client->getClient();
+        $guzzle = new \GuzzleHttp\Client(['verify' => base_path().'/resources/assets/cacert.pem']);
+        $client->setClient($guzzle);
+        $crawler = $client->request('GET', $feed->feedUrl);
+
+        $items = $crawler->filter($data['feed']['container'])->each(function ($node) {
+            return $node->html();
+        });
+
+        function cleanString($text) {
+            $utf8 = array(
+                '/[áàâãªä]/u'   =>   '',
+                '/[ÁÀÂÃÄ]/u'    =>   '',
+                '/[ÍÌÎÏ]/u'     =>   '',
+                '/[íìîï]/u'     =>   '',
+                '/[éèêë]/u'     =>   '',
+                '/[ÉÈÊË]/u'     =>   '',
+                '/[óòôõºö]/u'   =>   '',
+                '/[ÓÒÔÕÖ]/u'    =>   '',
+                '/[úùûü]/u'     =>   '',
+                '/[ÚÙÛÜ]/u'     =>   '',
+                '/ç/'           =>   '',
+                '/Ç/'           =>   '',
+                '/ñ/'           =>   '',
+                '/Ñ/'           =>   '',
+                '/–/'           =>   '-',
+                '/[’‘‹›‚]/u'    =>   "'",
+                '/[“”«»„]/u'    =>   '"',
+                '/ /'           =>   ' ',
+            );
+            return preg_replace(array_keys($utf8), array_values($utf8), $text);
+        }
+
+        foreach($items as $key => $value)
+        {
+          $crawler = new Crawler($value);
+          $title = $crawler->filter($data['feed']['title'])->each(function ($node){
+              return cleanString($node->text());
+          });
+          if(!empty($title[0]))
+          {
+            $result[$key]['title'] = $title[0];
+          }
+          else {
+            $result[$key]['title'] = "";
+          }
+
+          $author = $crawler->filter($data['feed']['author'])->each(function ($node) {
+              return $node->text();
+          });
+          if(!empty($author[0]))
+          {
+            $result[$key]['author'] = $author[0];
+          }
+          else {
+            $result[$key]['author'] = "";
+          }
+
+          $date = $crawler->filter($data['feed']['date'])->each(function ($node) {
+              return $node->text();
+          });
+          if(!empty($date[0]))
+          {
+            $result[$key]['date'] = $date[0];
+          }
+          else {
+            $result[$key]['date'] = "";
+          }
+
+          $content = $crawler->filter($data['feed']['content'])->each(function ($node){
+              return cleanString($node->text());
+          });
+          if(!empty($content[0]))
+          {
+            $result[$key]['content'] = $content[0];
+          }
+          else {
+            $result[$key]['content'] = "";
+          }
+
+          $media = $crawler->filter($data['feed']['media'])->each(function ($node) use ($data){
+            if($node->attr($data['feed']['mediaSrc']) != NULL)
+            {
+              return $node->attr($data['feed']['mediaSrc']);
+            }
+            else {
+              return $node->attr('src');
+            }
+          });
+          if(!empty($media[0]))
+          {
+            $result[$key]['media'] = $media[0];
+          }
+          else {
+            $result[$key]['media'] = "";
+          }
+
+
+          $link = $crawler->filter($data['feed']['link'])->each(function ($node) {
+              return $node->attr('href');
+          });
+          if(!empty($link[0]))
+          {
+            $result[$key]['link'] = $link[0];
+          }
+          else {
+            $result[$key]['link'] = "";
+          }
+        }
+
+        $options = $data['options'];
+
+        return Response::json(['feed' => $feed, 'result' => $result, 'options' => $options])->setCallback($request->input('callback'));
+      }
+      else if($feed->feedType == 'api')
+      {
+
+        $client = file_get_contents($feed->feedAPI);
+        $client = json_decode($client);
+
+        $title = explode(", ", $data['feed']['title']);
+        $author = explode(", ", $data['feed']['author']);
+        $date = explode(", ", $data['feed']['date']);
+        $content = explode(", ", $data['feed']['content']);
+        $media = explode(", ", $data['feed']['media']);
+        $link = explode(", ", $data['feed']['link']);
+
+        foreach($client->$data['feed']['container'] as $key => $value)
+        {
+          $result[$key]['title'] = $value;
+          for($i = 0; $i < count($title); $i++)
+          {
+            $result[$key]['title'] = $result[$key]['title']->$title[$i];
+          }
+
+          $result[$key]['author'] = $value;
+          for($i = 0; $i < count($author); $i++)
+          {
+            $result[$key]['author'] = $result[$key]['author']->$author[$i];
+          }
+
+          $result[$key]['date'] = $value;
+          for($i = 0; $i < count($date); $i++)
+          {
+            $result[$key]['date'] = $result[$key]['date']->$date[$i];
+          }
+
+          $result[$key]['content'] = $value;
+          for($i = 0; $i < count($content); $i++)
+          {
+            $result[$key]['content'] = $result[$key]['content']->$content[$i];
+          }
+
+          $result[$key]['media'] = $value;
+          for($i = 0; $i < count($media); $i++)
+          {
+            $result[$key]['media'] = $result[$key]['media']->$media[$i];
+          }
+
+          $result[$key]['link'] = $value;
+          for($i = 0; $i < count($link); $i++)
+          {
+            $result[$key]['link'] = $result[$key]['link']->$link[$i];
+          }
+        }
+
+        $options = $data['options'];
+
+        return Response::json(['feed' => $feed, 'result' => $result, 'options' => $options])->setCallback($request->input('callback'));
+      }
+    }
+    else {
+      return Response::json(403)->setCallback($request->input('callback'));
+    }
+  }
+
+  public function getBookmarks(Request $request)
+  {
+    $user = Auth::user();
+
+    if($user->role == 1)
+    {
+      $bookmarks = DB::table('bookmarks')->paginate(12);
+
+      return Response::json($bookmarks)->setCallback($request->input('callback'));
+    }
+    else {
+      return Response::json(403)->setCallback($request->input('callback'));
+    }
+  }
+
+  public function bookmarkFeed(Request $request)
+  {
+    $user = Auth::user();
+
+    if($user->role == 1)
+    {
+      $feedID = $request->json('feedID');
+      $bookmarkDomain = $request->json('bookmarkDomain');
+      $bookmarkTitle = $request->json('bookmarkTitle');
+      $bookmarkImg = $request->json('bookmarkImg');
+      $bookmarkAuthor = $request->json('bookmarkAuthor');
+      $bookmarkSource = $request->json('bookmarkSource');
+
+      $feed = Feed::find($feedID);
+      $data = file_get_contents($feed->feedLoc.'/feed.json');
+      $data = json_decode($data, true);
+
+      if(!empty($data['options']['prependLinks']))
+      {
+        $bookmarkSource = $data['options']['prependLinks'].$bookmarkSource;
+      }
+
+      if(!empty($data['options']['prependMedia']))
+      {
+        $bookmarkImg = $data['options']['prependMedia'].$bookmarkImg;
+      }
+
+      $bookmark = DB::table('bookmarks')->where('bookmarkSource', '=', $bookmarkSource)->first();
+      if(empty($bookmark))
+      {
+        DB::table('bookmarks')->insert(array('feedID' => $feedID, 'bookmarkDomain' => $bookmarkDomain, 'bookmarkTitle' => $bookmarkTitle, 'bookmarkImg' => $bookmarkImg, 'bookmarkAuthor' => $bookmarkAuthor, 'bookmarkSource' => $bookmarkSource));
+        return Response::json(1)->setCallback($request->input('callback'));
+      }
+      else {
+        DB::table('bookmarks')->where('bookmarkSource', '=', $bookmarkSource)->delete();
+        return Response::json(0)->setCallback($request->input('callback'));
+      }
+    } else {
+      return Response::json(403)->setCallback($request->input('callback'));
+    }
+  }
+
+  public function unBookmarkFeed(Request $request)
+  {
+    $user = Auth::user();
+    if($user->role == 1)
+    {
+      $id = $request->json('id');
+      $bookmark = DB::table('bookmarks')->where('id', '=', $id)->first();
+
+      if(empty($bookmark))
+      {
+        return Response::json(0)->setCallback($request->input('callback'));
+      }
+      else {
+        DB::table('bookmarks')->where('id', '=', $id)->delete();
+        return Response::json(1)->setCallback($request->input('callback'));
+      }
+    } else {
+      return Response::json(403)->setCallback($request->input('callback'));
+    }
+  }
+
+  public function deleteFeed(Request $request)
+  {
+    $id = $request->json('id');
+    $user = Auth::user();
+    if($user->role == 1)
+    {
+      $feed = Feed::find($id);
+      File::delete($feed->feedLoc);
+      $feed->delete();
+      return Response::json(1)->setCallback($request->input('callback'));
+    } else {
       return Response::json(403)->setCallback($request->input('callback'));
     }
   }

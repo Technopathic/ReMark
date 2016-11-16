@@ -8,6 +8,15 @@ Route::group(['prefix' => 'dashboard'], function()
 {
   //Dashboard
   Route::get('/', 'DashboardController@Dashboard');
+  
+  Route::get('getCatalogue', 'DashboardController@getCatalogue');
+  Route::post('runFeed', 'DashboardController@runFeed');
+  Route::get('getFeeds', 'DashboardController@getFeeds');
+  Route::get('selectFeed/{id}', 'DashboardController@selectFeed');
+  Route::post('deleteFeed', 'DashboardController@deleteFeed');
+  Route::get('getBookmarks', 'DashboardController@getBookmarks');
+  Route::post('bookmarkFeed', 'DashboardController@bookmarkFeed');
+  Route::post('unBookmarkFeed', 'DashboardController@unBookmarkFeed');
 
   Route::get('notifications', 'DashboardController@getNotifications');
   Route::get('showNotifications/{type}', 'DashboardController@showNotifications');
