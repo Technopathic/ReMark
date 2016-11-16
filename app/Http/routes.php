@@ -1,8 +1,8 @@
 <?php
 
 Route::get('getAPIInstall', 'InstallationController@getAPIInstall');
-
-
+Route::post('storeAPIInstall', 'InstallationController@storeAPIInstall');
+Route::post('installAPIDB', 'InstallationController@installAPIDB');
 
 Route::group(['prefix' => 'dashboard'], function()
 {

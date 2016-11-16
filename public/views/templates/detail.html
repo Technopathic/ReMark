@@ -1,6 +1,29 @@
-<div class="detail-header {{headerClass}}">
+<div class="detail-header">
   <h1>{{topic.topicTitle}}</h1>
-  <span>{{topic.created_at | amDateFormat:'ddd, MMM Do YYYY, h:mm:ss a'}} <span ng-if="topic.topicChannel != 1" >In {{topic.channelTitle}}</span></span>
+  <span layout-xs="column" layout-sm="column" layout="row" flex layout-align="center">
+    <span class="detail-Date">
+      {{topic.created_at | amDateFormat:'ddd, MMM Do YYYY, h:mm:ss a'}}
+      <span ng-if="topic.topicChannel != 1" >In {{topic.channelTitle}}</span>
+    </span>
+    <span class="detailStats">
+      <span ng-if="authenticated != true" ng-click="authDialog()" class="statOption">
+        <md-icon class="material-icons">favorite_border</md-icon>
+        <span class="statText">{{topic.topicVotes}}</span>
+      </span>
+      <span ng-if="authenticated == true" ng-click="voteTopic(topic.id)" class="statOption">
+        <md-icon class="material-icons">favorite_border</md-icon>
+        <span class="statText">{{topic.topicVotes}}</span>
+      </span>
+      <span class="statOption">
+        <md-icon class="material-icons">chat_bubble_outline</md-icon>
+        <span class="statText">{{topic.topicReplies}}</span>
+      </span>
+      <span class="statOption">
+        <md-icon class="material-icons">whatshot</md-icon>
+        <span class="statText">{{topic.topicViews}}</span>
+      </span>
+    </span>
+  </span>
 </div>
 
 <div ng-if="topic.showImage == 1"  class="detail-banner {{imageClass}}">

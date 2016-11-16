@@ -110,22 +110,11 @@ angular.module('remark.directives', [])
   }
 })
 
-.directive("stats", function() {
-  return {
-    restrict: 'E',
-    link: function(scope, element, attrs) {
-      scope.detailStatsClass = attrs.detailstatsclass;
-      scope.statsTextClass = attrs.statstextclass;
-    },
-    templateUrl: 'views/templates/stats.html',
-  }
-})
-
 .directive("author", function() {
   return {
     restrict: 'E',
     link: function(scope, element, attrs) {
-      scope.authorClass = attrs.authorclass;
+
     },
     templateUrl: 'views/templates/author.html',
   }

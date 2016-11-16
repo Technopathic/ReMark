@@ -223,10 +223,13 @@ footer {
 }
 
 .detail-header span {
-  font-size:1.3em;
+  font-size:1.1em;
   font-weight:300;
-  font-variant:small-caps;
   color:#555555;
+}
+
+.detail-Date {
+  font-variant:small-caps;
 }
 
 .detail-header a {
@@ -237,6 +240,8 @@ footer {
 .detail-body {
   margin-top:20px;
   margin-bottom:20px;
+  padding-left:15px;
+  padding-right:15px;
 }
 
 .detail-body p {
@@ -373,9 +378,13 @@ footer {
 }
 
 .detailStats {
-  padding:15px;
   color:#888888;
-  font-size:1.4em;
+  margin-top:-5px;
+  margin-left:15px;
+}
+
+.detailStats md-icon {
+  color:#444444;
 }
 
 .statOption {
