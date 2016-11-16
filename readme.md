@@ -25,7 +25,7 @@ Before you get started, ensure you have the following:
 - NPM with Bower
 
 ##Setting up ReMark
-To quickly set up ReMark on a Non-shared Host (VPS, Dedicated, Cloud), please follow the [ReMark Quick Start Guide](https://github.com/Technopathic/ReMark/wiki/ReMark-Quick-Start).
+To quickly set up ReMark on a Non-shared Host (VPS, Dedicated, Cloud), please follow the [ReMark Quick Start Guide](https://github.com/Technopathic/ReMark-Old/wiki/ReMark-Quick-Start).
 
 ##Built With
 - PHP Laravel Framework - Our back-end API is a Laravel app. It takes requests and makes responses in JSON.
