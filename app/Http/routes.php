@@ -4,11 +4,11 @@ Route::get('getAPIInstall', 'InstallationController@getAPIInstall');
 Route::post('storeAPIInstall', 'InstallationController@storeAPIInstall');
 Route::post('installAPIDB', 'InstallationController@installAPIDB');
 
-Route::group(['prefix' => 'dashboard'], function()
+Route::group(['prefix' => 'dashboard', 'middleware' => 'cors'], function()
 {
   //Dashboard
   Route::get('/', 'DashboardController@Dashboard');
-  
+
   Route::get('getCatalogue', 'DashboardController@getCatalogue');
   Route::post('runFeed', 'DashboardController@runFeed');
   Route::get('getFeeds', 'DashboardController@getFeeds');
@@ -74,7 +74,7 @@ Route::group(['prefix' => 'dashboard'], function()
 
 });
 
-Route::group(['prefix' => 'api'], function()
+Route::group(['prefix' => 'api', 'middleware' => 'cors'], function()
 {
     Route::get('getInfo', 'RemarksController@getInfo');
 

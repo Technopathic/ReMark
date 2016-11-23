@@ -151,6 +151,8 @@ return [
         Intervention\Image\ImageServiceProvider::class,
         Mews\Purifier\PurifierServiceProvider::class,
         GrahamCampbell\Markdown\MarkdownServiceProvider::class,
+        Jaybizzle\LaravelCrawlerDetect\LaravelCrawlerDetectServiceProvider::class,
+        Barryvdh\Cors\ServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -209,6 +211,7 @@ return [
         'Image' =>  Intervention\Image\Facades\Image::class,
         'Purifier' => Mews\Purifier\Facades\Purifier::class,
         'Markdown' => GrahamCampbell\Markdown\Facades\Markdown::class,
+        'Crawler'  => Jaybizzle\LaravelCrawlerDetect\Facades\LaravelCrawlerDetect::class,
     ],
 
 ];
