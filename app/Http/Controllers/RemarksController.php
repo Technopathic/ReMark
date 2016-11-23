@@ -80,7 +80,7 @@ class RemarksController extends Controller
 
     public function getInfo()
     {
-      $info = Option::select('website')->first();
+      $info = Option::select('website', 'aboutWebsite')->first();
 
       return Response::json($info);
     }

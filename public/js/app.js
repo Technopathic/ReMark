@@ -1,6 +1,6 @@
 angular.module('remark', ['ui.router', 'angular-loading-bar', 'angularMoment', 'ngMaterial', 'ngMessages', 'ngSanitize', 'ng-showdown', 'cfp.hotkeys', 'ngFileUpload', 'remark.controllers', 'remark.dashboard', 'remark.directives', 'remark.services'])
 
-.run(['$rootScope', '$state', '$interval', '$http', function($rootScope, $state, $interval, $http) {
+.run(['$rootScope', '$state', '$interval', '$http', 'MetaService', function($rootScope, $state, $interval, $http, MetaService) {
   $rootScope.$on('$stateChangeStart', function(event, toState) {
     var user = JSON.parse(localStorage.getItem('user'));
     var token = JSON.parse(localStorage.getItem('token'));
@@ -12,7 +12,8 @@ angular.module('remark', ['ui.router', 'angular-loading-bar', 'angularMoment', '
   });
 
   $http.get('api/getInfo').success(function(data) {
-    $rootScope.title = data.website;
+    $rootScope.metaservice = MetaService;
+    $rootScope.metaservice.set(data.website, data.aboutWebsite, "");
   });
 
   if($rootScope.authenticated === true) {
