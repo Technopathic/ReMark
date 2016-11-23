@@ -36,7 +36,7 @@ class DashboardController extends Controller
     $this->middleware('jwt.auth');
   }
 
-  public function Dashboard(Request $request)
+  public function Dashboard()
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -45,14 +45,14 @@ class DashboardController extends Controller
       $replies = Mreply::join('users', 'mreplies.replyAuthor', '=', 'users.id')->join('mtopics', 'mreplies.topicID', '=', 'mtopics.id')->orderBy('mreplies.created_at', 'DESC')->select('mreplies.id', 'mreplies.topicID', 'mreplies.replyParent', 'mreplies.replyAuthor', 'mreplies.replyBody', 'mtopics.topicSlug', 'mreplies.created_at', 'users.avatar', 'users.displayName')->take(5)->get();
       $users = User::where('activated', '=', 1)->where('role', '!=', 'Administrator')->select('id', 'name', 'avatar', 'replies', 'displayName')->take(5)->get();
 
-      return Response::json(['replies' => $replies, 'topics' => $topics, 'users' => $users])->setCallback($request->input('callback'));
+      return Response::json(['replies' => $replies, 'topics' => $topics, 'users' => $users]);
     }
     else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function getNotifications(Request $request)
+  public function getNotifications()
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -61,14 +61,14 @@ class DashboardController extends Controller
       $messages = Notification::where('userID', '=', $user->id)->where('notificationType', '=', 'Message')->orderBy('updated_at', 'DESC')->where('notificationRead', '=', 0)->get();
       $globals = "";
 
-      return Response::json(['alerts' => $alerts, 'messages' => $messages, 'globals' => $globals])->setCallback($request->input('callback'));
+      return Response::json(['alerts' => $alerts, 'messages' => $messages, 'globals' => $globals]);
     }
     else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function showNotifications(Request $request, $type)
+  public function showNotifications($type)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -77,23 +77,23 @@ class DashboardController extends Controller
         $replies = Notification::where('notifications.userID', '=', $user->id)->where('notifications.notificationType', '=', 'Alert')->where('notifications.notificationSubType', '=', 'Reply')->join('mreplies', 'notifications.contentID', '=', 'mreplies.id')->join('mtopics', 'mreplies.topicID', '=', 'mtopics.id')->select('notifications.id', 'notifications.contentID', 'notifications.notificationType', 'notifications.notificationSubType', 'notifications.notificationRead', 'notifications.updated_at', 'mreplies.replyBody', 'mreplies.replyAuthor', 'mreplies.topicID', 'mreplies.replyFlagged', 'mreplies.replyApproved', 'mreplies.replyFeature', 'mtopics.topicSlug', 'mtopics.topicTitle')->orderBy('notifications.updated_at')->paginate(10);
         $votes = Notification::where('notifications.userID', '=', $user->id)->where('notifications.notificationType', '=', 'Alert')->where('notifications.notificationSubType', '=', 'Vote')->join('votes', 'notifications.contentID', '=', 'votes.id')->where('votes.voteType', '=', 'Topic')->join('users', 'votes.userID', '=', 'users.id')->join('mtopics', 'votes.contentID', '=', 'mtopics.id')->select('notifications.id', 'notifications.notificationType', 'notifications.notificationSubType', 'notifications.notificationRead', 'notifications.updated_at', 'votes.contentID', 'votes.userID', 'votes.voteDirection', 'votes.voteType', 'users.name', 'mtopics.topicSlug')->orderBy('notifications.updated_at')->paginate(10);
 
-        return Response::json(['replies' => $replies, 'votes' => $votes])->setCallback($request->input('callback'));
+        return Response::json(['replies' => $replies, 'votes' => $votes]);
       }
       else if($type == "Message") {
         $messages = Notification::where('notifications.notificationType', '=', 'Message')->join('messages', 'notifications.contentID', '=', 'messages.id')->join('users', 'messages.senderID', '=', 'users.id')->select('notifications.id', 'notifications.contentID', 'notifications.notificationType', 'notifications.notificationRead', 'notifications.created_at', 'messages.senderID', 'messages.recipientID', 'messages.messageTitle', 'messages.messageBody', 'messages.messageArchived', 'users.name')->orderBy('created_at', 'DESC')->paginate(10);
 
-        return Response::json(['messages' => $messages])->setCallback($request->input('callback'));
+        return Response::json(['messages' => $messages]);
       }
       else if($type == "Global") {
 
       }
     }
     else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function openNotification(Request $request, $id)
+  public function openNotification($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -107,25 +107,25 @@ class DashboardController extends Controller
       }
     }
     else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function deleteNotification(Request $request, $id)
+  public function deleteNotification($id)
   {
     $user = Auth::user();
     if($user->role == 1)
     {
       $notification = Notification::find($id);
       $notification->delete();
-      return Response::json(1)->setCallback($request->input('callback'));
+      return Response::json(1);
     }
     else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function getCatalogue(Request $request)
+  public function getCatalogue()
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -149,10 +149,10 @@ class DashboardController extends Controller
       $option = Option::find(1);
       $option->feedVer = $version;
       $option->save();
-      return Response::json($masterData['contents'])->setCallback($request->input('callback'));
+      return Response::json($masterData['contents']);
     }
     else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -169,7 +169,7 @@ class DashboardController extends Controller
       $validator = Validator::make($request->json()->all(), $rules);
 
       if ($validator->fails()) {
-          return Response::json(0)->setCallback($request->input('callback'));
+          return Response::json(0);
       } else {
 
         $link = $request->json('feed');
@@ -196,7 +196,7 @@ class DashboardController extends Controller
         $check = Feed::where('feedName', '=', $feedData['info']['title'])->first();
         if(!empty($check) && $input == false)
         {
-          return Response::json(2)->setCallback($request->input('callback'));
+          return Response::json(2);
         }
         else {
           $data = new Feed;
@@ -222,29 +222,29 @@ class DashboardController extends Controller
           $data->save();
 
           $feedData = Feed::where('id', '=', $data->id)->select('id', 'feedUrl', 'feedName', 'feedTags', 'feedImg', 'feedLoc', 'created_at')->first();
-          return Response::json($feedData)->setCallback($request->input('callback'));
+          return Response::json($feedData);
         }
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function getFeeds(Request $request)
+  public function getFeeds()
   {
     $user = Auth::user();
     if($user->role == 1)
     {
       $feeds = Feed::select('id', 'feedUrl', 'feedName', 'feedTags', 'feedImg', 'feedLoc', 'created_at')->get();
 
-      return Response::json($feeds)->setCallback($request->input('callback'));
+      return Response::json($feeds);
     }
     else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function selectFeed(Request $request, $id)
+  public function selectFeed($id)
   {
     $user = Auth::user();
 
@@ -372,7 +372,7 @@ class DashboardController extends Controller
 
         $options = $data['options'];
 
-        return Response::json(['feed' => $feed, 'result' => $result, 'options' => $options])->setCallback($request->input('callback'));
+        return Response::json(['feed' => $feed, 'result' => $result, 'options' => $options]);
       }
       else if($feed->feedType == 'api')
       {
@@ -428,15 +428,15 @@ class DashboardController extends Controller
 
         $options = $data['options'];
 
-        return Response::json(['feed' => $feed, 'result' => $result, 'options' => $options])->setCallback($request->input('callback'));
+        return Response::json(['feed' => $feed, 'result' => $result, 'options' => $options]);
       }
     }
     else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function getBookmarks(Request $request)
+  public function getBookmarks()
   {
     $user = Auth::user();
 
@@ -444,10 +444,10 @@ class DashboardController extends Controller
     {
       $bookmarks = DB::table('bookmarks')->paginate(12);
 
-      return Response::json($bookmarks)->setCallback($request->input('callback'));
+      return Response::json($bookmarks);
     }
     else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -482,14 +482,14 @@ class DashboardController extends Controller
       if(empty($bookmark))
       {
         DB::table('bookmarks')->insert(array('feedID' => $feedID, 'bookmarkDomain' => $bookmarkDomain, 'bookmarkTitle' => $bookmarkTitle, 'bookmarkImg' => $bookmarkImg, 'bookmarkAuthor' => $bookmarkAuthor, 'bookmarkSource' => $bookmarkSource));
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
       else {
         DB::table('bookmarks')->where('bookmarkSource', '=', $bookmarkSource)->delete();
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -503,14 +503,14 @@ class DashboardController extends Controller
 
       if(empty($bookmark))
       {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
       else {
         DB::table('bookmarks')->where('id', '=', $id)->delete();
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -523,13 +523,13 @@ class DashboardController extends Controller
       $feed = Feed::find($id);
       File::delete($feed->feedLoc);
       $feed->delete();
-      return Response::json(1)->setCallback($request->input('callback'));
+      return Response::json(1);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function getOptions(Request $request)
+  public function getOptions()
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -537,9 +537,9 @@ class DashboardController extends Controller
       $options = Option::find(1);
       $apps = DB::table('apps')->get();
 
-      return Response::json(['options' => $options, 'apps' => $apps])->setCallback($request->input('callback'));
+      return Response::json(['options' => $options, 'apps' => $apps]);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
 
   }
@@ -553,7 +553,7 @@ class DashboardController extends Controller
 
       if($request->json('website') == NULL)
       {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
       else
       {
@@ -570,10 +570,10 @@ class DashboardController extends Controller
 
         $options->save();
 
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -588,7 +588,7 @@ class DashboardController extends Controller
       $validator = Validator::make($request->all(), $rules);
 
       if ($validator->fails()) {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       } else {
 
         $appFile = $request->file('appData');
@@ -596,7 +596,7 @@ class DashboardController extends Controller
 
         if($appMime !=  'application/zip')
         {
-          return Response::json(2)->setCallback($request->input('callback'));
+          return Response::json(2);
         }
         else {
 
@@ -639,16 +639,16 @@ class DashboardController extends Controller
             $app->appDocs = $appDocs;
             $app->save();
 
-            return Response::json(1)->setCallback($request->input('callback'));
+            return Response::json(1);
           }
           else {
             File::deleteDirectory($appDir);
-            return Response::json(3)->setCallback($request->input('callback'));
+            return Response::json(3);
           }
         }
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -851,10 +851,10 @@ class DashboardController extends Controller
       $app->appActive = 1;
       $app->save();
 
-      return Response::json(1)->setCallback($request->input('callback'));
+      return Response::json(1);
 
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -869,12 +869,12 @@ class DashboardController extends Controller
       if($app->id == 1)
       {
         //You cannot uninstall this app.
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
       elseif($app->activated == 1)
       {
         //Please install another app first.
-        return Response::json(2)->setCallback($request->input('callback'));
+        return Response::json(2);
       }
       else {
         $appDir = base_path().'/storage/apps/'.$app->appSlug;
@@ -882,9 +882,9 @@ class DashboardController extends Controller
         $app->delete();
       }
       //Success
-      return Response::json(1)->setCallback($request->input('callback'));
+      return Response::json(1);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 

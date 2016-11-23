@@ -93,14 +93,8 @@
   </head>
   <body>
     <div class="container">
-      <div class="navbar"><h1><a href="{!! $options->baseurl !!}">{{$options->website}}</a></h1></div>
-      <div class="channels">
-        <ul>
-          @foreach($channels as $key => $value)
-            <li><a href="channel/{!! $value->channelSlug !!}">{{$value->channelTitle}}</a></li>
-          @endforeach
-        </ul>
-      </div>
+      <div class="navbar"><h1><a href="{!! $options->baseurl !!}">{{$channel->channelTitle}}</a></h1></div>
+      <div class="navbar">{{$channel->channelDesc}}</div>
       @foreach($topics as $key => $value)
         <div class="topic">
           <div class="topicHead">

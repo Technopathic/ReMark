@@ -11,13 +11,13 @@ angular.module('remark', ['ui.router', 'angular-loading-bar', 'angularMoment', '
     }
   });
 
-  $http.jsonp('api/getInfo?callback=JSON_CALLBACK').success(function(data) {
+  $http.get('api/getInfo').success(function(data) {
     $rootScope.title = data.website;
   });
 
   if($rootScope.authenticated === true) {
     $interval(function() {
-      $http.jsonp('api/refreshToken?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+      $http.get('api/refreshToken?token='+$rootScope.currentToken)
       .success(function(data) {
         localStorage.setItem('token', data);
         $rootScope.currentToken = data;
@@ -30,7 +30,7 @@ angular.module('remark', ['ui.router', 'angular-loading-bar', 'angularMoment', '
   $mdThemingProvider.theme('default').primaryPalette('grey', { 'hue-1': '50'});
   $locationProvider.html5Mode(true);
   cfpLoadingBarProvider.includeSpinner = false;
-  $showdownProvider.loadExtension('youtube')
+  $showdownProvider.loadExtension('youtube');
 
   $stateProvider
 

@@ -3,7 +3,7 @@ angular.module('remark.services', [])
 .service('installStart', ['$http', function($http) {
 
   this.getInstall = function(query) {
-    return $http.jsonp('getAPIInstall?callback=JSON_CALLBACK');
+    return $http.get('getAPIInstall');
   };
 
 }])
@@ -11,7 +11,7 @@ angular.module('remark.services', [])
 .service('mainStart', ['$http', function($http) {
 
   this.getMain = function(query) {
-    return $http.jsonp('api/main?callback=JSON_CALLBACK', {ignoreLoadingBar: true});
+    return $http.get('api/main', {ignoreLoadingBar: true});
   };
 
 }])
@@ -19,11 +19,11 @@ angular.module('remark.services', [])
 .service('detailStart', ['$http', function($http) {
 
   this.getDetail = function(query) {
-    return $http.jsonp('api/getDetail/' + query + '?callback=JSON_CALLBACK');
+    return $http.get('api/getDetail/' + query);
   };
 
   this.getReplies = function(query) {
-    return $http.jsonp('api/getReplies/' + query + '?callback=JSON_CALLBACK');
+    return $http.get('api/getReplies/' + query);
   };
 
 }])
@@ -31,11 +31,11 @@ angular.module('remark.services', [])
 .service('channelStart', ['$http', function($http) {
 
   this.getChannels = function(query) {
-    return $http.jsonp('api/getChannels?callback=JSON_CALLBACK');
+    return $http.get('api/getChannels');
   };
 
   this.getChannel = function(query) {
-    return $http.jsonp('api/getChannel/' + query + '?callback=JSON_CALLBACK');
+    return $http.get('api/getChannel/' + query);
   };
 
 }])
@@ -43,7 +43,7 @@ angular.module('remark.services', [])
 .service('dashboardStart', ['$http', '$rootScope', function($http, $rootScope) {
 
   this.getMain = function(query) {
-    return $http.jsonp('api/main?&callback=JSON_CALLBACK');
+    return $http.get('api/main');
   };
 
 }])
@@ -51,15 +51,15 @@ angular.module('remark.services', [])
 .service('dashboardHomeStart', ['$http', '$rootScope', '$state', function($http, $rootScope, $state) {
 
   this.getHome = function(query) {
-    return $http.jsonp('dashboard?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK');
+    return $http.get('dashboard?token='+$rootScope.currentToken);
   };
 
   this.getNotifications = function(query) {
-    return $http.jsonp('dashboard/notifications?token='+ query +'&callback=JSON_CALLBACK');
+    return $http.get('dashboard/notifications?token='+ query);
   };
 
   this.getFeeds = function(query) {
-    return $http.jsonp('dashboard/getFeeds?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK');
+    return $http.get('dashboard/getFeeds?token='+$rootScope.currentToken);
   };
 
 }])
@@ -67,7 +67,7 @@ angular.module('remark.services', [])
 .service('dashboardContentStart', ['$http', '$rootScope', function($http, $rootScope) {
 
   this.getContent = function(query) {
-    return $http.jsonp('dashboard/getContent?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK');
+    return $http.get('dashboard/getContent?token='+$rootScope.currentToken);
   };
 
 }])
@@ -75,7 +75,7 @@ angular.module('remark.services', [])
 .service('dashboardUserStart', ['$http', '$rootScope', function($http, $rootScope) {
 
   this.getUsers = function(query) {
-    return $http.jsonp('dashboard/getUsers?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK');
+    return $http.get('dashboard/getUsers?token='+$rootScope.currentToken);
   };
 
 }])
@@ -83,7 +83,7 @@ angular.module('remark.services', [])
 .service('dashboardOptionStart', ['$http', '$rootScope', function($http, $rootScope) {
 
   this.getOptions = function(query) {
-    return $http.jsonp('dashboard/getOptions?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK');
+    return $http.get('dashboard/getOptions?token='+$rootScope.currentToken);
   };
 
 }])

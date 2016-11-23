@@ -46,7 +46,7 @@ class AuthenticateController extends Controller
     $validator = Validator::make(Purifier::clean($request->json()->all()), $rules);
 
     if ($validator->fails()) {
-      return Response::json(0)->setCallback($request->input('callback'));
+      return Response::json(0);
     } else {
 
       $options = Option::find(1);
@@ -101,29 +101,29 @@ class AuthenticateController extends Controller
           if($options->requireActivation == 0)
           {
             //Success
-            return Response::json(1)->setCallback($request->input('callback'));
+            return Response::json(1);
           }
           else
           {
             //Require Activation
-            return Response::json(6)->setCallback($request->input('callback'));
+            return Response::json(6);
           }
 
         } else {
           if($userCheck->email === $email)
           {
             //Email Already Registered
-            return Response::json(2)->setCallback($request->input('callback'));
+            return Response::json(2);
           }
           elseif($userCheck->name === $username)
           {
             //Username already Registered
-            return Response::json(3)->setCallback($request->input('callback'));
+            return Response::json(3);
           }
         }
       } else {
         //Registration Not Allowed
-        return Response::json(5)->setCallback($request->input('callback'));
+        return Response::json(5);
       }
     }
   }
@@ -140,15 +140,15 @@ class AuthenticateController extends Controller
         $user->activated = 1;
         $user->save();
         //Success
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
       else {
         //User Activated already
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
       //User not found
-      return Response::json(2)->setCallback($request->input('callback'));
+      return Response::json(2);
     }
   }
 
@@ -172,25 +172,25 @@ class AuthenticateController extends Controller
         }
         if($userCheck->ban == 1) {
           //User is banned
-          return Response::json(0)->setCallback($request->input('callback'));
+          return Response::json(0);
         }
         else {
           if($options->requireActivation == 1 && $userCheck->activated == 0)
           {
             //Require Activation
-            return Response::json(3)->setCallback($request->input('callback'));
+            return Response::json(3);
           }
           else {
-            return Response::json(compact('token'))->setCallback($request->input('callback'));
+            return Response::json(compact('token'));
           }
         }
       } else {
         //User not found
-        return Response::json(2)->setCallback($request->input('callback'));
+        return Response::json(2);
       }
   }
 
-  public function getAuthenticatedUser(Request $request)
+  public function getAuthenticatedUser()
   {
       try {
         if (! $user = JWTAuth::parseToken()->authenticate()) {
@@ -203,10 +203,10 @@ class AuthenticateController extends Controller
       } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
         return response()->json(['token_absent'], $e->getStatusCode());
       }
-      return response()->json(compact('user'))->setCallback($request->input('callback'));
+      return response()->json(compact('user'));
   }
 
-  public function refreshToken(Request $request) {
+  public function refreshToken() {
     $token = JWTAuth::getToken();
     if(!$token){
         throw new BadRequestHtttpException('Token not provided');
@@ -217,7 +217,7 @@ class AuthenticateController extends Controller
         throw new AccessDeniedHttpException('The token is invalid');
     }
 
-    return Response::json($token)->setCallback($request->input('callback'));
+    return Response::json($token);
   }
 
   public function resetPassword(Request $request)
@@ -228,7 +228,7 @@ class AuthenticateController extends Controller
     $validator = Validator::make($request->json()->all(), $rules);
 
     if ($validator->fails()) {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
     } else {
 
       $options = Option::find(1);
@@ -246,10 +246,10 @@ class AuthenticateController extends Controller
               $m->to($user->email)->subject($website.' - Password Reset');
           });
 
-          return Response::json(1)->setCallback($request->input('callback'));
+          return Response::json(1);
         }
         else {
-          return Response::json(2)->setCallback($request->input('callback'));
+          return Response::json(2);
         }
       }
       else {
@@ -263,10 +263,10 @@ class AuthenticateController extends Controller
               $m->to($user->email)->subject($website.' - Password Reset');
           });
 
-          return Response::json(1)->setCallback($request->input('callback'));
+          return Response::json(1);
         }
         else {
-          return Response::json(3)->setCallback($request->input('callback'));
+          return Response::json(3);
         }
       }
     }
@@ -280,14 +280,14 @@ class AuthenticateController extends Controller
     );
     $validator = Validator::make($request->json()->all(), $rules);
     if ($validator->fails()) {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
     } else {
 
       $reset = DB::table('password_resets')->where('token', '=', $token)->first();
       if(empty($reset))
       {
         //Token not found
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
       else {
         $date1 = new DateTime($reset->created_at);
@@ -302,7 +302,7 @@ class AuthenticateController extends Controller
         {
           //This reset form has expired.
           $reset->delete();
-          return Response::json(2)->setCallback($request->input('callback'));
+          return Response::json(2);
         }
         else {
           $newPassword = $request->json('newPassword');
@@ -311,7 +311,7 @@ class AuthenticateController extends Controller
           if($newPassword != $confirmPassword)
           {
             //Passwords do not match.
-            return Response::json(3)->setCallback($request->input('callback'));
+            return Response::json(3);
           }
           else {
             $user = User::where('email', '=', $reset->email)->first();
@@ -319,7 +319,7 @@ class AuthenticateController extends Controller
             $user->password = Hash::make($newPassword);
             $user->save();
 
-            return Response::json(1)->setCallback($request->input('callback'));
+            return Response::json(1);
           }
         }
       }
@@ -335,7 +335,7 @@ class AuthenticateController extends Controller
     $validator = Validator::make($request->json()->all(), $rules);
 
     if ($validator->fails()) {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
     } else {
 
       $subscriptionContact = $request->json('contact');
@@ -363,7 +363,7 @@ class AuthenticateController extends Controller
             }
             else {
               //Admin has not allowed Texting
-              return Response::json(2)->setCallback($request->input('callback'));
+              return Response::json(2);
             }
           }
 
@@ -375,16 +375,16 @@ class AuthenticateController extends Controller
           $subscription->subscriptionActive = false;
           $subscription->save();
 
-          return Response::json(1)->setCallback($request->input('callback'));
+          return Response::json(1);
         }
         else {
           //You have already signed up
-          return Response::json(3)->setCallback($request->input('callback'));
+          return Response::json(3);
         }
       }
       else {
         //Admin does not allow Subscribing
-        return Response::json(4)->setCallback($request->input('callback'));
+        return Response::json(4);
       }
     }
   }
@@ -401,19 +401,19 @@ class AuthenticateController extends Controller
         $subscription->subscriptionActive = 1;
         $subscription->save();
         //Activate
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
       else {
         //Already Active
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
       //Token not found
-      return Response::json(2)->setCallback($request->input('callback'));
+      return Response::json(2);
     }
   }
 
-  public function unSubscribe(Request $request, $token)
+  public function unSubscribe($token)
   {
     $subscription = Subscription::where('subscriptionID', '=', $token)->first();
 
@@ -424,15 +424,15 @@ class AuthenticateController extends Controller
         $subscription->subscriptionActive = false;
         $subscription->save();
         //Unsubscribed
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
       else {
         //Not subscribed
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
       //Token not found
-      return Response::json(2)->setCallback($request->input('callback'));
+      return Response::json(2);
     }
   }
 }

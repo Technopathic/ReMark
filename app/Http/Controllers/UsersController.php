@@ -26,7 +26,7 @@ class UsersController extends Controller
     $this->middleware('jwt.auth');
   }
 
-  public function getUsers(Request $request)
+  public function getUsers()
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -34,26 +34,26 @@ class UsersController extends Controller
       $users = User::join('roles', 'users.role', '=', 'roles.id')->select('users.id', 'users.name', 'users.displayName', 'users.email', 'users.avatar', 'users.topics', 'users.replies', 'users.role', 'users.activated', 'users.ban', 'users.last_login', 'users.created_at', 'roles.roleName')->get();
       $roles = Role::select('id', 'roleName', 'roleSlug', 'roleDesc', 'roleCount')->get();
 
-      return Response::json(['users' => $users, 'roles' => $roles])->setCallback($request->input('callback'));
+      return Response::json(['users' => $users, 'roles' => $roles]);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function editUser(Request $request, $id)
+  public function editUser($id)
   {
     $user = Auth::user();
     if($user->role == 1)
     {
       $user = User::find($id);
 
-      return Response::json($user)->setCallback($request->input('callback'));
+      return Response::json($user);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function banUser(Request $request, $id)
+  public function banUser($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -66,23 +66,23 @@ class UsersController extends Controller
         {
           $user->ban = 1;
           $user->save();
-          return Response::json(1)->setCallback($request->input('callback'));
+          return Response::json(1);
         }
         else {
           $user->ban = 0;
           $user->save();
-          return Response::json(2)->setCallback($request->input('callback'));
+          return Response::json(2);
         }
       }
       else {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function resetPassword(Request $request, $id) {
+  public function resetPassword($id) {
     $user = Auth::user();
     if($user->role == 1)
     {
@@ -94,17 +94,17 @@ class UsersController extends Controller
             $m->to($user->email)->subject('Password Reset');
         });
 
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
       else {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function activateUser(Request $request, $id) {
+  public function activateUser($id) {
     $user = Auth::user();
     if($user->role == 1)
     {
@@ -115,21 +115,21 @@ class UsersController extends Controller
         $user->activated = 1;
         $user->save();
 
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
       elseif($user->activated == 1)
       {
         $user->activated = 0;
         $user->save();
 
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function deleteUser(Request $request, $id)
+  public function deleteUser($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -139,13 +139,13 @@ class UsersController extends Controller
       if($user->id != $options->owner)
       {
         $user->delete();
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
       else {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -162,7 +162,7 @@ class UsersController extends Controller
       $validator = Validator::make($request->json()->all(), $rules);
 
       if ($validator->fails()) {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       } else {
 
         $email = $request->json('newUserEmail');
@@ -194,21 +194,21 @@ class UsersController extends Controller
           $role->save();
 
           $newUser = User::where('users.id', '=', $user->id)->join('roles', 'users.role', '=', 'roles.id')->select('users.id', 'users.name', 'users.displayName', 'users.email', 'users.location', 'users.website', 'users.aboutMe', 'users.profileTitle', 'users.avatar', 'users.topics', 'users.replies', 'users.role', 'users.activated', 'users.last_login', 'users.created_at', 'roles.roleName')->first();
-          return Response::json($newUser)->setCallback($request->input('callback'));
+          return Response::json($newUser);
 
         } else {
           if($userCheck->email == $email)
           {
-            return Response::json(2)->setCallback($request->input('callback'));
+            return Response::json(2);
           }
           elseif($userCheck->name == $username)
           {
-            return Response::json(3)->setCallback($request->input('callback'));
+            return Response::json(3);
           }
         }
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -288,17 +288,17 @@ class UsersController extends Controller
           $password = Hash::make($password);
           $profile->password = $password;
         } else {
-          return Response::json(0)->setCallback($request->input('callback'));
+          return Response::json(0);
         }
       }
 
       $profile->save();
 
       $userData= User::where('users.id', '=', $profile->id)->join('roles', 'users.role', '=', 'roles.id')->select('users.id', 'users.name', 'users.displayName', 'users.email', 'users.location', 'users.website', 'users.aboutMe', 'users.profileTitle', 'users.avatar', 'users.topics', 'users.replies', 'users.role', 'users.activated', 'users.ban', 'users.last_login', 'users.created_at', 'roles.roleName')->first();
-      return Response::json($userData)->setCallback($request->input('callback'));
+      return Response::json($userData);
 
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -313,7 +313,7 @@ class UsersController extends Controller
       $validator = Validator::make($request->json()->all(), $rules);
 
       if ($validator->fails()) {
-          return Response::json(0)->setCallback($request->input('callback'));
+          return Response::json(0);
       } else {
 
         $roleName = $request->json('roleName');
@@ -337,14 +337,14 @@ class UsersController extends Controller
         $role->save();
 
         $roleData = Role::where('id', '=', $role->id)->select('id', 'roleName', 'roleSlug', 'roleDesc', 'roleCount')->first();
-        return Response::json($roleData)->setCallback($request->input('callback'));
+        return Response::json($roleData);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function filterRole(Request $request, $id)
+  public function filterRole($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -352,22 +352,22 @@ class UsersController extends Controller
       $role = Role::find($id);
       $users = User::where('users.role', '=', $role->roleName)->join('roles', 'users.role', '=', 'roles.id')->select('users.id', 'users.name', 'users.displayName', 'users.email', 'users.avatar', 'users.topics', 'users.replies', 'users.role', 'users.activated', 'users.last_login', 'users.created_at', 'roles.roleName')->get();
 
-      return Response::json($users)->setCallback($request->input('callback'));
+      return Response::json($users);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function editRole(Request $request, $id)
+  public function editRole($id)
   {
     $user = Auth::user();
     if($user->role == 1)
     {
       $role = Role::find($id);
 
-      return Response::json($role)->setCallback($request->input('callback'));
+      return Response::json($role);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -382,7 +382,7 @@ class UsersController extends Controller
       $validator = Validator::make($request->json()->all(), $rules);
 
       if ($validator->fails()) {
-          return Response::json(0)->setCallback($request->input('callback'));
+          return Response::json(0);
       } else {
 
         $role = Role::find($id);
@@ -405,14 +405,14 @@ class UsersController extends Controller
             $roleDesc = "No Description";
           }
         }
-        return Response::json($role)->setCallback($request->input('callback'));
+        return Response::json($role);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function deleteRole(Request $request, $id)
+  public function deleteRole($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -432,13 +432,13 @@ class UsersController extends Controller
           }
         }
         $role->delete();
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
       else {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -458,20 +458,20 @@ class UsersController extends Controller
         if($user->id == $option->owner)
         {
           //Role Cannot be changed.
-          return Response::json(2)->setCallback($request->input('callback'));
+          return Response::json(2);
         } else {
           $user->role = $role;
           $user->save();
           //Success
           $userData = User::where('users.id', '=', $user->id)->join('roles', 'users.role', '=', 'roles.id')->select('users.id', 'users.name', 'users.displayName', 'users.email', 'users.location', 'users.website', 'users.aboutMe', 'users.profileTitle', 'users.avatar', 'users.topics', 'users.replies', 'users.role', 'users.activated', 'users.ban', 'users.last_login', 'users.created_at', 'roles.roleName')->first();
-          return Response::json($userData)->setCallback($request->input('callback'));
+          return Response::json($userData);
         }
       } else {
         //Role not found
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
 
   }

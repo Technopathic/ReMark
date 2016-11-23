@@ -21,13 +21,13 @@ class InstallationController extends Controller
 
   }
 
-  public function getAPIInstall(Request $request)
+  public function getAPIInstall()
   {
     if(DB::connection()->getDatabaseName())
     {
-      return Response::json(1)->setCallback($request->input('callback'));
+      return Response::json(1);
     } else {
-      return Response::json(0)->setCallback($request->input('callback'));
+      return Response::json(0);
     }
   }
 
@@ -45,7 +45,7 @@ class InstallationController extends Controller
     $validator = Validator::make($request->json()->all(), $rules);
 
     if ($validator->fails()) {
-      return Response::json(0)->setCallback($request->input('callback'));
+      return Response::json(0);
     } else {
         $databaseUser = $request->json('databaseUser');
         $databasePassword = $request->json('databasePassword');
@@ -63,7 +63,7 @@ class InstallationController extends Controller
         if(!$connection)
         {
           //Could not connect
-          return Response::json(2)->setCallback($request->input('callback'));
+          return Response::json(2);
         } else {
           $checkName = preg_match('/[^A-Z]/i', $adminName);
           if($checkName === 0){
@@ -76,7 +76,7 @@ class InstallationController extends Controller
                 if($adminPassword != $passwordConfirm)
                 {
                   //Passwords do not match
-                  return Response::json(3)->setCallback($request->input('callback'));
+                  return Response::json(3);
                 } else {
 
                   $env = base_path()."/.env";
@@ -91,20 +91,20 @@ class InstallationController extends Controller
                   $adminPassword = Hash::make($adminPassword);
 
                   //Success
-                  return Response::json(['adminName' => $adminName, 'adminPassword' => $adminPassword, 'adminEmail' => $adminEmail, 'siteName' => $siteName])->setCallback($request->input('callback'));
+                  return Response::json(['adminName' => $adminName, 'adminPassword' => $adminPassword, 'adminEmail' => $adminEmail, 'siteName' => $siteName]);
                   //return Redirect::to('installDB/'.$adminName.'/'.$adminPassword.'/'.$adminEmail.'/'.$siteName);
                 }
               } else {
                 //Email is not valid
-                return Response::json(4)->setCallback($request->input('callback'));
+                return Response::json(4);
               }
             } else {
               //Password cannot contain spaces
-              return Response::json(5)->setCallback($request->input('callback'));
+              return Response::json(5);
             }
           } else {
             //Username cannot contain spaces or special characters
-            return Response::json(6)->setCallback($request->input('callback'));
+            return Response::json(6);
           }
         }
       }
@@ -121,7 +121,7 @@ class InstallationController extends Controller
       $validator = Validator::make($request->json()->all(), $rules);
 
       if ($validator->fails()) {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       } else {
 
         $adminName = $request->json('adminName');
@@ -149,7 +149,7 @@ class InstallationController extends Controller
         $DBRoute = str_replace("Route::post('installAPIDB', 'InstallationController@installAPIDB');", "", $routes);
         file_put_contents($routeFile, $DBRoute);
 
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
     }
 }

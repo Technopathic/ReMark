@@ -32,7 +32,7 @@ class RemarkAdminsController extends Controller
     $this->middleware('jwt.auth');
   }
 
-  public function getContent(Request $request)
+  public function getContent()
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -40,13 +40,13 @@ class RemarkAdminsController extends Controller
       $channels = Mchannel::select('id', 'channelTitle', 'channelDesc', 'channelImg', 'channelTopics', 'channelSlug', 'created_at')->paginate(10);
       $topics = Mtopic::join('mchannels', 'mtopics.topicChannel', '=', 'mchannels.id')->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicThumbnail', 'mtopics.topicChannel', 'mtopics.topicSlug', 'mtopics.topicViews', 'mtopics.topicReplies', 'mtopics.topicVotes', 'mtopics.topicFeature', 'mtopics.topicTags', 'mtopics.topicType', 'mtopics.pageMenu', 'mtopics.allowReplies', 'mtopics.showImage', 'mtopics.topicStatus', 'mtopics.created_at', 'mchannels.channelTitle')->orderBy('mtopics.created_at', 'DESC')->paginate(10);
 
-      return Response::json(['channels' => $channels, 'topics' => $topics])->setCallback($request->input('callback'));
+      return Response::json(['channels' => $channels, 'topics' => $topics]);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function getTopics(Request $request, $id)
+  public function getTopics($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -58,13 +58,13 @@ class RemarkAdminsController extends Controller
         $topics = Mtopic::where('mtopics.topicChannel', '=', $id)->join('mchannels', 'mtopics.topicChannel', '=', 'mchannels.id')->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicThumbnail', 'mtopics.topicChannel', 'mtopics.topicSlug', 'mtopics.topicViews', 'mtopics.topicReplies', 'mtopics.topicVotes', 'mtopics.topicFeature', 'mtopics.topicTags', 'mtopics.topicType', 'mtopics.pageMenu', 'mtopics.allowReplies', 'mtopics.showImage', 'mtopics.topicStatus', 'mtopics.created_at', 'mchannels.channelTitle')->orderBy('mtopics.created_at', 'DESC')->paginate(10);
       }
 
-      return Response::json($topics)->setCallback($request->input('callback'));
+      return Response::json($topics);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function getTopic(Request $request, $id)
+  public function getTopic($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -87,37 +87,37 @@ class RemarkAdminsController extends Controller
         }
       }
 
-      return Response::json(['topic' => $topic, 'replies' => $replies])->setCallback($request->input('callback'));
+      return Response::json(['topic' => $topic, 'replies' => $replies]);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function getChannels(Request $request)
+  public function getChannels()
   {
     $user = Auth::user();
     if($user->role == 1)
     {
       $channels = Mchannel::select('id', 'channelTitle', 'channelDesc', 'channelImg', 'channelTopics', 'channelSlug', 'created_at')->paginate(10);
-      return Response::json($channels)->setCallback($request->input('callback'));
+      return Response::json($channels);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function createTopic(Request $request)
+  public function createTopic()
   {
     $user = Auth::user();
     if($user->role == 1)
     {
       $channels = Mchannel::where('channelArchived', '=', 0)->select('id', 'channelTitle')->get();
 
-      return Response::json($channels)->setCallback($request->input('callback'));
+      return Response::json($channels);
 
-      return Response::json($channels)->setCallback($request->input('callback'));
+      return Response::json($channels);
     }
     else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -132,7 +132,7 @@ class RemarkAdminsController extends Controller
       ]);
 
       if ($validator->fails()) {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
       else {
 
@@ -261,13 +261,13 @@ class RemarkAdminsController extends Controller
           }
 
           $topicData = Mtopic::where('mtopics.id', '=', $topic->id)->join('mchannels', 'mtopics.topicChannel', '=', 'mchannels.id')->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicBody', 'mtopics.topicImg', 'mtopics.topicThumbnail', 'mtopics.topicChannel', 'mtopics.topicSlug', 'mtopics.topicViews', 'mtopics.topicReplies', 'mtopics.topicAuthor', 'mtopics.topicFeature', 'mtopics.topicTags', 'mtopics.topicStatus', 'mtopics.topicType', 'mtopics.allowReplies', 'mtopics.showImage', 'mtopics.created_at', 'mchannels.channelTitle')->first();
-          return Response::json($topicData)->setCallback($request->input('callback'));
+          return Response::json($topicData);
         } else {
-          return Response::json(0)->setCallback($request->input('callback'));
+          return Response::json(0);
         }
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -279,9 +279,9 @@ class RemarkAdminsController extends Controller
       $topic = Mtopic::find($id);
       $channels = Mchannel::where('channelArchived', '=', 0)->select('id', 'channelTitle')->get();
 
-      return Response::json(['topic' => $topic, 'channels' => $channels])->setCallback($request->input('callback'));
+      return Response::json(['topic' => $topic, 'channels' => $channels]);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -297,7 +297,7 @@ class RemarkAdminsController extends Controller
       $validator = Validator::make($request->all(), $rules);
 
       if ($validator->fails()) {
-          return Response::json(0)->setCallback($request->input('callback'));
+          return Response::json(0);
       } else {
 
         $topic = Mtopic::find($id);
@@ -325,7 +325,7 @@ class RemarkAdminsController extends Controller
             $topic->topicTitle = $topicTitle;
             $topic->topicSlug = $topicSlug;
           } else {
-            return Response::json(0)->setCallback($request->input('callback'));
+            return Response::json(0);
           }
         }
         if($topicBody != NULL)
@@ -391,14 +391,14 @@ class RemarkAdminsController extends Controller
         $topic->save();
 
         $topicData = Mtopic::where('mtopics.id', '=', $topic->id)->join('mchannels', 'mtopics.topicChannel', '=', 'mchannels.id')->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicBody', 'mtopics.topicImg', 'mtopics.topicThumbnail', 'mtopics.topicChannel', 'mtopics.topicSlug', 'mtopics.topicViews', 'mtopics.topicReplies', 'mtopics.topicAuthor', 'mtopics.topicFeature', 'mtopics.topicTags', 'mtopics.topicStatus', 'mtopics.topicType', 'mtopics.allowReplies', 'mtopics.showImage', 'mtopics.created_at', 'mchannels.channelTitle')->first();
-        return Response::json($topicData)->setCallback($request->input('callback'));
+        return Response::json($topicData);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function deleteTopic(Request $request, $id)
+  public function deleteTopic($id)
   {
     $user = Auth::user();
 
@@ -468,13 +468,13 @@ class RemarkAdminsController extends Controller
       }
       $topic->delete();
 
-      return Response::json(1)->setCallback($request->input('callback'));
+      return Response::json(1);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function setFeature(Request $request, $id)
+  public function setFeature($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -487,32 +487,32 @@ class RemarkAdminsController extends Controller
           $topic->topicFeature = 1;
           $topic->save();
           //Feature
-          return Response::json(1)->setCallback($request->input('callback'));
+          return Response::json(1);
         }
         else if($topic->topicFeature == 1)
         {
           $topic->topicFeature = 0;
           $topic->save();
           //Unfeature
-          return Response::json(0)->setCallback($request->input('callback'));
+          return Response::json(0);
         }
       } else {
         //No Image
-        return Response::json(2)->setCallback($request->input('callback'));
+        return Response::json(2);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function createChannel(Request $request)
+  public function createChannel()
   {
     $user = Auth::user();
     if($user->role == 1)
     {
-      return Response::json(1)->setCallback($request->input('callback'));
+      return Response::json(1);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -527,7 +527,7 @@ class RemarkAdminsController extends Controller
       $validator = Validator::make($request->all(), $rules);
 
       if ($validator->fails()) {
-          return Response::json(0)->setCallback($request->input('callback'));
+          return Response::json(0);
       } else {
 
         $channelTitle = $request->input('channelTitle');
@@ -589,26 +589,26 @@ class RemarkAdminsController extends Controller
           $channel->save();
 
           $channelData = Mchannel::where('id', '=', $channel->id)->select('id', 'channelTitle', 'channelDesc', 'channelImg', 'channelTopics', 'channelSlug', 'created_at')->first();
-          return Response::json($channelData)->setCallback($request->input('callback'));
+          return Response::json($channelData);
         } else {
-          return Response::json(0)->setCallback($request->input('callback'));
+          return Response::json(0);
         }
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function editChannel(Request $request, $id)
+  public function editChannel($id)
   {
     $user = Auth::user();
     if($user->role == 1)
     {
       $channel = Mchannel::find($id);
 
-      return Response::json($channel)->setCallback($request->input('callback'));
+      return Response::json($channel);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -623,7 +623,7 @@ class RemarkAdminsController extends Controller
       $validator = Validator::make($request->all(), $rules);
 
       if ($validator->fails()) {
-          return Response::json(0)->setCallback($request->input('callback'));
+          return Response::json(0);
       } else {
 
         $channel = Mchannel::find($id);
@@ -646,7 +646,7 @@ class RemarkAdminsController extends Controller
             $channel->channelTitle = $channelTitle;
             $channel->channelSlug = $channelSlug;
           } else {
-            return Response::json(0)->setCallback($request->input('callback'));
+            return Response::json(0);
           }
         }
 
@@ -697,14 +697,14 @@ class RemarkAdminsController extends Controller
         $channel->save();
 
         $channelData = Mchannel::where('id', '=', $channel->id)->select('id', 'channelTitle', 'channelDesc', 'channelImg', 'channelTopics', 'channelSlug', 'created_at')->first();
-        return Response::json($channelData)->setCallback($request->input('callback'));
+        return Response::json($channelData);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function deleteChannel(Request $request, $id)
+  public function deleteChannel($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -724,17 +724,17 @@ class RemarkAdminsController extends Controller
         }
         $channel->delete();
 
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
       else {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function unflagReply(Request $request, $id)
+  public function unflagReply($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -744,26 +744,26 @@ class RemarkAdminsController extends Controller
       {
         $reply->replyFlagged = 0;
         $reply->save();
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
       else {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function editReply(Request $request, $id)
+  public function editReply($id)
   {
     $user = Auth::user();
     if($user->role == 1)
     {
       $reply = Mreply::find($id);
 
-      return Response::json($reply)->setCallback($request->input('callback'));
+      return Response::json($reply);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -782,13 +782,13 @@ class RemarkAdminsController extends Controller
 
         $replyData = Mreply::where('mreplies.id', '=', $id)->join('users', 'mreplies.replyAuthor', '=', 'users.id')->orderBy('mreplies.created_at', 'ASC')->select('mreplies.id', 'mreplies.replyParent', 'mreplies.created_at', 'mreplies.replyBody', 'mreplies.childCount', 'mreplies.replyFlagged', 'mreplies.replyFeature', 'mreplies.replyApproved', 'users.avatar', 'users.name', 'users.displayName')->first();
 
-        return Response::json($replyData)->setCallback($request->input('callback'));
+        return Response::json($replyData);
       }
       else {
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
@@ -857,13 +857,13 @@ class RemarkAdminsController extends Controller
 
       $reply->delete();
 
-      return Response::json(1)->setCallback($request->input('callback'));
+      return Response::json(1);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function featureReply(Request $request, $id)
+  public function featureReply($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -873,19 +873,19 @@ class RemarkAdminsController extends Controller
       {
         $reply->replyFeature = 1;
         $reply->save();
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
       else {
         $reply->replyFeature = 0;
         $reply->save();
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function approveReply(Request $request, $id)
+  public function approveReply($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -895,14 +895,14 @@ class RemarkAdminsController extends Controller
       {
         $reply->replyApproved = 1;
         $reply->save();
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function pageMenu(Request $request, $id)
+  public function pageMenu($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -912,33 +912,33 @@ class RemarkAdminsController extends Controller
       {
         $page->pageMenu = 1;
         $page->save();
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
       else {
         $page->pageMenu = 0;
         $page->save();
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function messages(Request $request)
+  public function messages()
   {
     $user = Auth::user();
     if($user->role == 1)
     {
       $inbox = Message::where('recipientID', '=', Auth::user()->id)->get();
 
-      return Response::json($inbox)->setCallback($request->input('callback'));
+      return Response::json($inbox);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
 
-  public function deleteMessage(Request $request, $id)
+  public function deleteMessage($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -947,13 +947,13 @@ class RemarkAdminsController extends Controller
       $message->messageArchived = 1;
       $message->save();
 
-      return Response::json(1)->setCallback($request->input('callback'));
+      return Response::json(1);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 
-  public function showMessage(Request $request, $id)
+  public function showMessage($id)
   {
     $user = Auth::user();
     if($user->role == 1)
@@ -970,9 +970,9 @@ class RemarkAdminsController extends Controller
         }
       }
 
-      return Response::json($message)->setCallback($request->input('callback'));
+      return Response::json($message);
     } else {
-      return Response::json(403)->setCallback($request->input('callback'));
+      return Response::json(403);
     }
   }
 }

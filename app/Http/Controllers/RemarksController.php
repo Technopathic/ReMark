@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 use JWTAuth;
 use Auth;
 use App\Mtopic;
@@ -60,22 +61,39 @@ class RemarksController extends Controller
       }
     }
 
-    public function getInfo(Request $request)
+    public function staticChannel($slug)
+    {
+      if(Crawler::isCrawler()) {
+        $options = Option::select('website', 'baseurl', 'siteLogo', 'aboutWebsite')->first();
+        $channel = Mchannel::where('channelSlug', '=', $slug)->select('id', 'channelTitle', 'channelSlug', 'channelDesc', 'channelTopics')->first();
+        $topics = Mtopic::where('topicChannel', '=', $channel->id)->where('mtopics.topicStatus', '=', 'Published')->join('mchannels', 'mtopics.topicChannel', '=', 'mchannels.id')->join('users', 'mtopics.topicAuthor', '=', 'users.id')->orderBy('mtopics.created_at', 'DESC')->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicSlug', 'mtopics.topicBody', 'mtopics.topicThumbnail', 'mtopics.created_at', 'mtopics.topicReplies', 'mtopics.topicViews', 'mtopics.topicChannel', 'mchannels.channelTitle', 'mtopics.topicType', 'users.displayName', 'users.name', 'users.avatar')->paginate(12);
+
+      return view('static.channel')
+        ->with('options', $options)
+        ->with('channel', $channel)
+        ->with('topics', $topics);
+
+      } else {
+        return File::get('index.html');
+      }
+    }
+
+    public function getInfo()
     {
       $info = Option::select('website')->first();
 
-      return Response::json($info)->setCallback($request->input('callback'));
+      return Response::json($info);
     }
 
-    public function main(Request $request)
+    public function main()
     {
       $pages = Mtopic::where('pageMenu', '=', 1)->orderBy('id', 'ASC')->select('id', 'topicTitle', 'topicSlug')->get();
       $options = Option::select('website', 'baseurl', 'siteLogo', 'homeBanner', 'aboutWebsite', 'allowAsk', 'allowSubscription', 'homePage')->first();
 
-      return Response::json(['pages' => $pages, 'options' => $options])->setCallback($request->input('callback'));
+      return Response::json(['pages' => $pages, 'options' => $options]);
     }
 
-    public function getTopics(Request $request, $channel = 0, $count = 6, $length = 500)
+    public function getTopics($channel = 0, $count = 6, $length = 500)
     {
       if($channel == '0')
       {
@@ -102,31 +120,31 @@ class RemarksController extends Controller
         }
       }
 
-      return Response::json($topics)->setCallback($request->input('callback'));
+      return Response::json($topics);
     }
 
-    public function getFeatured(Request $request)
+    public function getFeatured()
     {
       $features = Mtopic::where('topicStatus', '=', 'Published')->where('topicFeature', '=', 1)->orderBy('created_at', 'DESC')->take(6)->select('id', 'topicTitle', 'topicSlug', 'topicImg', 'created_at')->get();
 
-      return Response::json($features)->setCallback($request->input('callback'));
+      return Response::json($features);
     }
 
-    public function getChannels(Request $request)
+    public function getChannels()
     {
       $channels = Mchannel::select('id', 'channelTitle', 'channelDesc', 'channelImg', 'channelTopics', 'channelSlug', 'created_at')->get();
 
-      return Response::json($channels)->setCallback($request->input('callback'));
+      return Response::json($channels);
     }
 
-    public function getChannel(Request $request, $slug)
+    public function getChannel($slug)
     {
       $channel = Mchannel::where('channelSlug', '=', $slug)->select('id', 'channelTitle', 'channelSlug', 'channelDesc', 'channelTopics')->first();
 
-      return Response::json($channel)->setCallback($request->input('callback'));
+      return Response::json($channel);
     }
 
-    public function getDetail(Request $request, $slug)
+    public function getDetail($slug)
     {
       $topic = Mtopic::where('mtopics.topicSlug', '=', $slug)->where('mtopics.topicStatus', '=', 'Published')->join('mchannels', 'mtopics.topicChannel', '=', 'mchannels.id')->select('mtopics.id', 'mtopics.topicSlug', 'mtopics.topicTitle', 'mtopics.topicChannel', 'mtopics.topicImg', 'mtopics.topicThumbnail', 'mtopics.topicAudio', 'mtopics.topicVideo', 'mtopics.created_at', 'mtopics.topicReplies', 'mtopics.topicViews', 'mtopics.topicBody', 'mtopics.topicAuthor', 'mtopics.topicTags', 'mtopics.topicVotes', 'mchannels.channelTitle', 'mtopics.topicType', 'mtopics.allowReplies', 'mtopics.showImage')->first();
       $user = User::where('id', '=', $topic->topicAuthor)->select('id', 'name', 'displayName', 'avatar')->first();
@@ -141,10 +159,10 @@ class RemarksController extends Controller
       $previousTopic = Mtopic::where('mtopics.id', '<', $topic->id)->where('mtopics.topicStatus', '=', 'Published')->where('topicChannel', '=', $topic->topicChannel)->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicSlug', 'mtopics.topicChannel', 'mtopics.topicThumbnail', 'mtopics.created_at', 'mtopics.topicType')->orderBy('mtopics.id','desc')->first();
       $nextTopic = Mtopic::where('mtopics.id', '>', $topic->id)->where('mtopics.topicStatus', '=', 'Published')->where('topicChannel', '=', $topic->topicChannel)->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicSlug', 'mtopics.topicChannel', 'mtopics.topicThumbnail', 'mtopics.created_at', 'mtopics.topicType')->orderBy('mtopics.id','asc')->first();
 
-      return Response::json(['topic' => $topic, 'user' => $user, 'relates' => $relates, 'previousTopic' => $previousTopic, 'nextTopic' => $nextTopic])->setCallback($request->input('callback'));
+      return Response::json(['topic' => $topic, 'user' => $user, 'relates' => $relates, 'previousTopic' => $previousTopic, 'nextTopic' => $nextTopic]);
     }
 
-    public function getReplies(Request $request, $slug)
+    public function getReplies($slug)
     {
       $topic = Mtopic::where('mtopics.topicSlug', '=', $slug)->where('mtopics.topicStatus', '=', 'Published')->select('mtopics.id')->first();
 
@@ -165,10 +183,10 @@ class RemarksController extends Controller
         }
       }
 
-      return Response::json(['replies' => $replies])->setCallback($request->input('callback'));
+      return Response::json(['replies' => $replies]);
     }
 
-    public function voteTopic(Request $request, $id)
+    public function voteTopic($id)
     {
       $topic = Mtopic::find($id);
       $user = Auth::user()->id;
@@ -194,7 +212,7 @@ class RemarksController extends Controller
 
         }
 
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
       else {
         if($topic->topicVotes > 0)
@@ -203,7 +221,7 @@ class RemarksController extends Controller
           $topic->save();
         }
         DB::table('votes')->where('userID', '=', $user)->where('contentID', '=', $topic->id)->delete();
-        return Response::json(0)->setCallback($request->input('callback'));
+        return Response::json(0);
       }
     }
 
@@ -216,7 +234,7 @@ class RemarksController extends Controller
       $validator = Validator::make($request->json()->all(), $rules);
 
       if ($validator->fails()) {
-          return Response::json(0)->setCallback($request->input('callback'));
+          return Response::json(0);
       } else {
 
         $topicID = $request->json('topicID');
@@ -228,7 +246,7 @@ class RemarksController extends Controller
         $topicCheck = Mtopic::find($topicID);
         if($topicCheck->allowReplies == 0)
         {
-          return Response::json(7)->setCallback($request->input('callback'));
+          return Response::json(7);
         }
 
         $pastReplies = Mreply::where('replyAuthor', '=', $replyAuthor->id)->select('id', 'created_at')->orderBy('id', 'DESC')->skip(5)->take(1)->first();
@@ -241,13 +259,13 @@ class RemarksController extends Controller
           $interval = $datetime1->diff($datetime2);
 
           if($interval->format('%a%H') < 1) {
-            return Response::json(5)->setCallback($request->input('callback'));
+            return Response::json(5);
           }
         }
 
         if(strlen($replyBody) > 500)
         {
-          return Response::json(3)->setCallback($request->input('callback'));
+          return Response::json(3);
         }
         else {
 
@@ -259,7 +277,7 @@ class RemarksController extends Controller
 
           if(substr_count($replyBody, 'img') > 1 || substr_count($replyBody, 'href') > 1 || substr_count($replyBody, 'youtube.com') > 1)
           {
-            return Response::json(4)->setCallback($request->input('callback'));
+            return Response::json(4);
           }
           else {
             if(empty($replyParent))
@@ -271,7 +289,7 @@ class RemarksController extends Controller
               $parentReply = Mreply::where('id', '=', $replyParent)->select('id', 'childCount', 'replyAuthor', 'replyParent')->first();
               if($parentReply->replyParent != 0)
               {
-                return Response::json(6)->setCallback($request->input('callback'));
+                return Response::json(6);
               }
             }
 
@@ -342,28 +360,28 @@ class RemarksController extends Controller
               $replyData = Mreply::where('mreplies.id', '=', $reply->id)->where('mreplies.replyApproved', '=', 1)->join('users', 'mreplies.replyAuthor', '=', 'users.id')->select('mreplies.id', 'mreplies.replyParent', 'mreplies.created_at', 'mreplies.replyBody', 'mreplies.childCount', 'users.avatar', 'users.name', 'users.displayName')->first();
               $replyData['showChildren'] = 0;
               $replyData['childReplies'] = array();
-              return Response::json($replyData)->setCallback($request->input('callback'));
+              return Response::json($replyData);
             }
             else
             {
-              return Response::json(2)->setCallback($request->input('callback'));
+              return Response::json(2);
             }
           }
         }
       }
     }
 
-    public function getUser(Request $request, $name)
+    public function getUser($name)
     {
       $user = User::where('users.name', '=', $name)->where('users.ban', '=', 0)->join('roles', 'users.role', '=', 'roles.id')->select('users.id', 'users.name', 'users.displayName', 'users.avatar', 'roles.roleName')->first();
 
       if(!empty($user))
       {
-        return Response::json($user)->setCallback($request->input('callback'));
+        return Response::json($user);
       }
       else
       {
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       }
     }
 
@@ -376,7 +394,7 @@ class RemarksController extends Controller
       $email = Purifier::clean($request->input('email'));
       $avatar = $request->file('avatar');
       $password = Purifier::clean($request->input('password'));
-      $confirm = Purifier::clean($request->input('confirm'));
+      $confirm = Purifier::clean($request->input('confirmPassword'));
       $emailReply = Purifier::clean($request->input('emailReply'));
       $emailDigest = Purifier::clean($request->input('emailDigest'));
 
@@ -405,7 +423,7 @@ class RemarksController extends Controller
 
         if(File::size($avatar) > 2097152)
         {
-          return Response::json(2)->setCallback($request->input('callback'));
+          return Response::json(2);
         }
         else {
 
@@ -446,14 +464,14 @@ class RemarksController extends Controller
           $password = Hash::make($password);
           $profile->password = $password;
         } else {
-          return Response::json(0)->setCallback($request->input('callback'));
+          return Response::json(0);
         }
       }
 
       $profile->save();
 
       $userData = User::where('users.id', '=', $profile->id)->join('roles', 'users.role', '=', 'roles.id')->select('users.displayName', 'users.email', 'users.avatar')->first();
-      return Response::json($userData)->setCallback($request->input('callback'));
+      return Response::json($userData);
     }
 
   public function deactivateUser()
@@ -464,7 +482,7 @@ class RemarksController extends Controller
     $user->activated == 0;
     $user->save();
 
-    return Response::json(1)->setCallback($request->input('callback'));
+    return Response::json(1);
   }
 
   public function storeMessage(Request $request)
@@ -475,7 +493,7 @@ class RemarksController extends Controller
     $validator = Validator::make($request->json()->all(), $rules);
 
     if ($validator->fails()) {
-      return Response::json(0)->setCallback($request->input('callback'));
+      return Response::json(0);
     } else {
 
       $options = Option::find(1);
@@ -496,7 +514,7 @@ class RemarksController extends Controller
           $interval = $datetime1->diff($datetime2);
 
           if($interval->format('%a%H') < 1) {
-            return Response::json(3)->setCallback($request->input('callback'));
+            return Response::json(3);
           }
         }
 
@@ -517,9 +535,9 @@ class RemarksController extends Controller
         $notification->notificationRead = 0;
         $notification->save();
 
-        return Response::json(1)->setCallback($request->input('callback'));
+        return Response::json(1);
       } else {
-        return Response::json(2)->setCallback($request->input('callback'));
+        return Response::json(2);
       }
     }
   }
@@ -533,7 +551,7 @@ class RemarksController extends Controller
     $validator = Validator::make($request->json()->all(), $rules);
 
     if ($validator->fails()) {
-      return Response::json(0)->setCallback($request->input('callback'));
+      return Response::json(0);
     } else {
 
       $searchType = Purifier::clean($request->json('searchType'));
@@ -552,7 +570,7 @@ class RemarksController extends Controller
         $result = User::where('users.ban', '!=', 1)->where('users.displayName', 'LIKE', '%'.$searchContent.'%')->select('users.id', 'users.avatar', 'users.name', 'users.displayName')->paginate(10);
       }
 
-      return Response::json($result)->setCallback($request->input('callback'));
+      return Response::json($result);
     }
   }
 }

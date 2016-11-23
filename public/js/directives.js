@@ -18,9 +18,10 @@ angular.module('remark.directives', [])
       scope.selectClass = attrs.selectclass;
       scope.transition = attrs.transition;
       scope.featureIndex = 0;
+      scope.features = [];
 
       scope.getFeatured = function() {
-        $http.jsonp('api/getFeatured?callback=JSON_CALLBACK')
+        $http.get('api/getFeatured')
         .success(function(data)
         {
           scope.features = data;
@@ -57,7 +58,7 @@ angular.module('remark.directives', [])
       scope.channelsExcerpt = attrs.excerpt;
 
       scope.getChannels = function() {
-        $http.jsonp('api/getChannels?callback=JSON_CALLBACK')
+        $http.get('api/getChannels')
         .success(function (data){
           scope.channels = data;
         });
@@ -83,7 +84,7 @@ angular.module('remark.directives', [])
       scope.topicsExcerpt = attrs.excerpt;
 
       scope.getTopics = function(channel = 0, count = 6, length = 500, page = 1) {
-        $http.jsonp('api/getTopics/channel='+channel+'&count='+count+'&length='+length+'?page='+page+'&callback=JSON_CALLBACK')
+        $http.get('api/getTopics/channel='+channel+'&count='+count+'&length='+length+'?page='+page)
         .success(function (data){
           scope.topics = data;
         });

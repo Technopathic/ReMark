@@ -552,7 +552,7 @@ angular.module('remark.controllers', [])
   });
 
   $scope.voteTopic = function(id) {
-    $http.jsonp('api/voteTopic/' + $scope.topic.id + '?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('api/voteTopic/' + $scope.topic.id + '?token='+$rootScope.currentToken)
     .success(function (data){
       if(data == 1)
       {
@@ -689,7 +689,7 @@ angular.module('remark.controllers', [])
   var id = id;
 
   $scope.getProfile = function() {
-    $http.jsonp('api/getUser/' + id + '?callback=JSON_CALLBACK')
+    $http.get('api/getUser/' + id)
     .success(function(data) {
       $scope.user = data;
     })

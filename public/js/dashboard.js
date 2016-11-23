@@ -95,14 +95,14 @@ angular.module('remark.dashboard', [])
   $scope.type = showType;
 
   $scope.showNotifications = function() {
-    $http.jsonp('dashboard/showNotifications/'+$scope.type+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/showNotifications/'+$scope.type+'?token='+$rootScope.currentToken)
     .success(function (data){
       $scope.notifications = data;
     });
   };
 
   $scope.moreNotiReply = function(page = 1) {
-    $http.jsonp('dashboard/showNotifications/'+$scope.type+'?page='+page+'token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/showNotifications/'+$scope.type+'?page='+page+'token='+$rootScope.currentToken)
     .success(function (data){
       $scope.notifications.replies.data.push(data.replies.data);
       $scope.notifications.replies.current_page = data.replies.current_page;
@@ -110,7 +110,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.moreNotiVote = function(page = 1) {
-    $http.jsonp('dashboard/showNotifications/'+$scope.type+'?page='+page+'token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/showNotifications/'+$scope.type+'?page='+page+'token='+$rootScope.currentToken)
     .success(function (data){
       $scope.notifications.votes.data.push(data.votes.data);
       $scope.notifications.votes.current_page = data.votes.current_page;
@@ -118,7 +118,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.moreNotiMessage = function(page = 1) {
-    $http.jsonp('dashboard/showNotifications/'+$scope.type+'?page='+page+'token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/showNotifications/'+$scope.type+'?page='+page+'token='+$rootScope.currentToken)
     .success(function (data){
       $scope.notifications.messages.data.push(data.messages.data);
       $scope.notifications.messages.current_page = data.messages.current_page;
@@ -126,7 +126,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.openNotification = function(id) {
-    $http.jsonp('dashboard/openNotification/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK');
+    $http.get('dashboard/openNotification/'+id+'?token='+$rootScope.currentToken);
   };
 
   $scope.showMessage = function(ev, id) {
@@ -179,7 +179,7 @@ angular.module('remark.dashboard', [])
   var messageID = id;
 
   $scope.getMessage = function() {
-    $http.jsonp('dashboard/showMessage/'+messageID+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/showMessage/'+messageID+'?token='+$rootScope.currentToken)
     .success(function (data){
       $scope.message = data;
     });
@@ -223,14 +223,14 @@ angular.module('remark.dashboard', [])
 
 
   $scope.getCatalogue = function() {
-    $http.jsonp('dashboard/getCatalogue?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/getCatalogue?token='+$rootScope.currentToken)
     .success(function (data){
       $scope.catalogue = data;
     });
   };
 
   $scope.getBookmarks = function() {
-    $http.jsonp('dashboard/getBookmarks?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/getBookmarks?token='+$rootScope.currentToken)
     .success(function (data){
       $scope.bookmarks = data;
     });
@@ -315,7 +315,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.selectFeed = function(id) {
-    $http.jsonp('dashboard/selectFeed/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/selectFeed/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
       $scope.loadFeed = data;
     });
@@ -340,7 +340,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.getBookmarks = function(page = 1) {
-    $http.jsonp('dashboard/getBookmarks?page='+page+'&token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/getBookmarks?page='+page+'&token='+$rootScope.currentToken)
     .success(function (data){
       $scope.bookmarks = data;
     });
@@ -471,7 +471,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.getTopics = function(id, index) {
-    $http.jsonp('dashboard/getTopics/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/getTopics/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
       $scope.topics = data;
       $scope.convertPageMenu();
@@ -482,7 +482,7 @@ angular.module('remark.dashboard', [])
 
   $scope.moreChannels = function(){
     var page = $scope.channels.current_page + 1;
-    $http.jsonp('dashboard/getChannels?page='+page+'&token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/getChannels?page='+page+'&token='+$rootScope.currentToken)
     .success(function (data) {
       angular.forEach(data.data, function(value) {
         $scope.channels.data.push(data.data);
@@ -494,7 +494,7 @@ angular.module('remark.dashboard', [])
 
   $scope.moreTopics = function() {
     var page = $scope.topics.current_page + 1;
-    $http.jsonp('dashboard/getTopics/'+$scope.activeChannel+'?page='+page+'&token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/getTopics/'+$scope.activeChannel+'?page='+page+'&token='+$rootScope.currentToken)
     .success(function (data){
       angular.forEach(data.data, function(value) {
         $scope.topics.data.push(value);
@@ -506,7 +506,7 @@ angular.module('remark.dashboard', [])
 
   $scope.selectTopic = function(id) {
     $scope.activeTopic = id;
-    $http.jsonp('dashboard/getTopic/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/getTopic/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
       $scope.topicDetail = data.topic;
       $scope.replies = data.replies;
@@ -515,7 +515,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.setFeature = function(id, index) {
-    $http.jsonp('dashboard/setFeature/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/setFeature/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
       if(data == 1)
       {
@@ -590,7 +590,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.pageMenu = function(id) {
-    $http.jsonp('dashboard/pageMenu/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/pageMenu/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
       if(data == 1)
       {
@@ -662,7 +662,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.channelMenu = function(id) {
-    $http.jsonp('dashboard/channelMenu/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/channelMenu/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
       if(data == 1)
       {
@@ -676,7 +676,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.unflag = function(id, index, type) {
-    $http.jsonp('dashboard/unflagReply/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/unflagReply/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
       if(data == 1)
       {
@@ -721,7 +721,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.featureReply = function(id, type, index) {
-    $http.jsonp('dashboard/featureReply/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/featureReply/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
       if(data == 1)
       {
@@ -755,7 +755,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.approveReply = function(id, index, type) {
-    $http.jsonp('dashboard/approveReply/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/approveReply/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
       if(data == 1)
       {
@@ -891,7 +891,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.createTopic = function() {
-    $http.jsonp('dashboard/createTopic?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/createTopic?token='+$rootScope.currentToken)
     .success(function (data){
       $scope.channelList = data;
       if(channelData != "")
@@ -910,7 +910,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.getReply = function() {
-    $http.jsonp('dashboard/editReply/'+replyData+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/editReply/'+replyData+'?token='+$rootScope.currentToken)
     .success(function (data){
       $scope.replyData.replyID = data.id
       $scope.replyData.replyBody = data.replyBody;
@@ -1179,7 +1179,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.getUsers = function() {
-    $http.jsonp('dashboard/getUsers?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/getUsers?token='+$rootScope.currentToken)
     .success(function (data){
       $scope.users = data.users;
       $scope.roles = data.roles;
@@ -1187,7 +1187,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.resetPassword = function(id) {
-    $http.jsonp('dashboard/resetPassword/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/resetPassword/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
       if(data == 1)
       {
@@ -1200,7 +1200,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.activateUser = function(id) {
-    $http.jsonp('dashboard/activateUser/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/activateUser/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
       if(data == 1)
       {
@@ -1213,7 +1213,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.banUser = function(id) {
-    $http.jsonp('dashboard/banUser/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/banUser/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
       if(data == 1)
       {
@@ -1248,7 +1248,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.filterRole = function(id) {
-    $http.jsonp('dashboard/filterRole/'+id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/filterRole/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
       $scope.users = data;
     });
@@ -1412,7 +1412,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.getRole = function() {
-    $http.jsonp('dashboard/editRole/'+roleData.id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/editRole/'+roleData.id+'?token='+$rootScope.currentToken)
     .success(function (data){
       $scope.role = data;
     });
@@ -1440,7 +1440,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.getProfile = function() {
-    $http.jsonp('dashboard/editUser/'+userData.id+'?token='+$rootScope.currentToken+'&callback=JSON_CALLBACK')
+    $http.get('dashboard/editUser/'+userData.id+'?token='+$rootScope.currentToken)
     .success(function (data){
       $scope.profile = data;
     });
