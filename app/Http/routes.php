@@ -107,4 +107,6 @@ Route::group(['prefix' => 'api', 'middleware' => 'cors'], function()
 });
 
 Route::get('channel/{slug}', 'RemarksController@staticChannel');
+Route::get('topic/{slug}', 'RemarksController@staticDetail');
+
 Route::any('{path?}', 'RemarksController@index')->where("path", ".+");

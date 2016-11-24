@@ -78,9 +78,32 @@ class RemarksController extends Controller
       }
     }
 
+    public function staticDetail($slug)
+    {
+      if(Crawler::isCrawler()) {
+        $options = Option::select('website', 'baseurl', 'siteLogo', 'aboutWebsite')->first();
+        $topic = Mtopic::where('mtopics.topicSlug', '=', $slug)->where('mtopics.topicStatus', '=', 'Published')->join('mchannels', 'mtopics.topicChannel', '=', 'mchannels.id')->select('mtopics.id', 'mtopics.topicSlug', 'mtopics.topicTitle', 'mtopics.topicChannel', 'mtopics.topicImg', 'mtopics.topicThumbnail', 'mtopics.topicAudio', 'mtopics.topicVideo', 'mtopics.created_at', 'mtopics.topicReplies', 'mtopics.topicViews', 'mtopics.topicBody', 'mtopics.topicAuthor', 'mtopics.topicTags', 'mtopics.topicVotes', 'mchannels.channelTitle', 'mtopics.topicType', 'mtopics.allowReplies', 'mtopics.showImage')->first();
+
+        $metaImage = $options->baseurl.'/'.$topic->topicThumbnail;
+
+        $topicBody = Markdown::convertToHtml($topic->topicBody);
+        $topicBody = strip_tags($topicBody);
+        $metaDesc = substr($topicBody, 0, 250);
+
+        return view('static.detail')
+          ->with('options', $options)
+          ->with('metaImage', $metaImage)
+          ->with('metaDesc', $metaDesc)
+          ->with('topic', $topic);
+
+      } else {
+        return File::get('index.html');
+      }
+    }
+
     public function getInfo()
     {
-      $info = Option::select('website', 'aboutWebsite')->first();
+      $info = Option::select('website', 'aboutWebsite', 'siteLogo', 'baseurl')->first();
 
       return Response::json($info);
     }
@@ -134,6 +157,19 @@ class RemarksController extends Controller
     {
       $channels = Mchannel::select('id', 'channelTitle', 'channelDesc', 'channelImg', 'channelTopics', 'channelSlug', 'created_at')->get();
 
+      $result = [];
+      $tags = Mtopic::where('topicStatus', '=', 'Published')->select('topicTags')->get();
+      foreach($tags as $key => $value)
+      {
+        $temp = explode(",", $value);
+        foreach($temp as $tkey => $tvalue)
+        {
+          $result[] = $tvalue;
+        }
+      }
+
+      $result = array_unique($result);
+
       return Response::json($channels);
     }
 
@@ -156,8 +192,8 @@ class RemarksController extends Controller
 
       $topic->increment('topicViews');
 
-      $previousTopic = Mtopic::where('mtopics.id', '<', $topic->id)->where('mtopics.topicStatus', '=', 'Published')->where('topicChannel', '=', $topic->topicChannel)->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicSlug', 'mtopics.topicChannel', 'mtopics.topicThumbnail', 'mtopics.created_at', 'mtopics.topicType')->orderBy('mtopics.id','desc')->first();
-      $nextTopic = Mtopic::where('mtopics.id', '>', $topic->id)->where('mtopics.topicStatus', '=', 'Published')->where('topicChannel', '=', $topic->topicChannel)->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicSlug', 'mtopics.topicChannel', 'mtopics.topicThumbnail', 'mtopics.created_at', 'mtopics.topicType')->orderBy('mtopics.id','asc')->first();
+      $previousTopic = Mtopic::where('mtopics.id', '<', $topic->id)->where('mtopics.topicStatus', '=', 'Published')->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicSlug', 'mtopics.topicChannel', 'mtopics.topicThumbnail', 'mtopics.created_at', 'mtopics.topicType')->orderBy('mtopics.id','desc')->first();
+      $nextTopic = Mtopic::where('mtopics.id', '>', $topic->id)->where('mtopics.topicStatus', '=', 'Published')->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicSlug', 'mtopics.topicChannel', 'mtopics.topicThumbnail', 'mtopics.created_at', 'mtopics.topicType')->orderBy('mtopics.id','asc')->first();
 
       return Response::json(['topic' => $topic, 'user' => $user, 'relates' => $relates, 'previousTopic' => $previousTopic, 'nextTopic' => $nextTopic]);
     }

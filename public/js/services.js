@@ -33,10 +33,12 @@ angular.module('remark.services', [])
 
 }])
 
-.service('detailStart', ['$http', function($http) {
+.service('detailStart', ['$http', '$rootScope', function($http, $rootScope) {
 
   this.getDetail = function(query) {
-    return $http.get('api/getDetail/' + query);
+    return $http.get('api/getDetail/' + query).success(function(data) {
+      $rootScope.metaservice.set(data.topic.topicTitle, data.topic.topicBody.substring(0,250), data.topic.topicTags);
+    })
   };
 
   this.getReplies = function(query) {

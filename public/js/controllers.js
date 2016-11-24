@@ -513,7 +513,10 @@ angular.module('remark.controllers', [])
 
 .controller('HomeCtrl', ['$scope', '$rootScope', '$state', '$http', function($scope, $rootScope, $state, $http) {
 
-
+  $http.get('api/getInfo').success(function(data) {
+    $rootScope.metaservice.set(data.website, data.aboutWebsite, "");
+  });
+  
 }])
 
 
