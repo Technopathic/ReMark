@@ -35,7 +35,6 @@ Route::group(['prefix' => 'dashboard', 'middleware' => 'cors'], function()
   Route::get('editUser/{id}', 'UsersController@editUser');
   Route::post('deleteUser/{id}', 'UsersController@deleteUser');
   Route::get('banUser/{id}', 'UsersController@banUser');
-  Route::get('resetPassword/{id}', 'UsersController@resetPassword');
   Route::get('activateUser/{id}', 'UsersController@activateUser');
   Route::post('addUser', 'UsersController@storeUser');
   Route::post('updateProfile/{id}', 'UsersController@updateProfile');
@@ -79,12 +78,11 @@ Route::group(['prefix' => 'api', 'middleware' => 'cors'], function()
     Route::get('getInfo', 'RemarksController@getInfo');
 
     Route::resource('authenticate', 'AuthenticateController', ['only' => ['index']]);
-    Route::post('authenticate', 'AuthenticateController@authenticate');
     Route::get('authenticate/user', 'AuthenticateController@getAuthenticatedUser');
+    Route::post('checkEmail', 'AuthenticateController@checkEmail');
     Route::post('signUp', 'AuthenticateController@doSignUp');
-    Route::post('confirmToken', 'AuthenticateController@confirmToken');
-    Route::post('resetPassword', 'AuthenticateController@resetPassword');
-    Route::post('confirmReset/{token}', 'AuthenticateController@confirmReset');
+    Route::post('signIn', 'AuthenticateController@doSignIn');
+
     Route::get('refreshToken', 'AuthenticateController@refreshToken');
 
     Route::get('main', 'RemarksController@main');
@@ -106,7 +104,11 @@ Route::group(['prefix' => 'api', 'middleware' => 'cors'], function()
     Route::post('search', 'RemarksController@search');
 });
 
-Route::get('channel/{slug}', 'RemarksController@staticChannel');
-Route::get('topic/{slug}', 'RemarksController@staticDetail');
+Route::group(['prefix' => 'static'], function()
+{
+  Route::get('/', 'RemarksController@staticIndex');
+  Route::get('channel/{slug}', 'RemarksController@staticChannel');
+  Route::get('topic/{slug}', 'RemarksController@staticDetail');
+});
 
 Route::any('{path?}', 'RemarksController@index')->where("path", ".+");

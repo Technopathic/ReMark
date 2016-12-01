@@ -1,4 +1,4 @@
-<md-dialog aria-label="Profile" ng-cloak flex-gt-md="50" flex="100">
+<md-dialog aria-label="Profile" ng-cloak flex-gt-sm="25" flex="100">
   <form>
     <md-dialog-content>
       <div layout="row" layout-sm="column" layout-padding>
@@ -15,22 +15,10 @@
               <img ngf-src="profile.avatar" />
             </div>
           </div>
-        </div>
-        <div layout="column" flex>
           <md-input-container class="md-icon-float md-block">
             <md-icon class="material-icons">email</md-icon>
             <label>Email</label>
             <input ng-model="profile.email" type="email">
-          </md-input-container>
-          <md-input-container class="md-icon-float md-block">
-            <md-icon class="material-icons">lock_outline</md-icon>
-            <label>New Password</label>
-            <input ng-model="profile.newPassword" type="password">
-          </md-input-container>
-          <md-input-container class="md-icon-float md-block">
-            <md-icon class="material-icons">lock</md-icon>
-            <label>Confirm Password</label>
-            <input ng-model="profile.confirmPassword" type="password">
           </md-input-container>
           <md-input-container class="md-icon-float md-block">
             <md-switch ng-model="profile.emailDigest" aria-label="Email Digest" class="md-block">
@@ -52,7 +40,7 @@
       <md-divider></md-divider>
       <div class="md-dialog-actions" layout="row" layout-align="end end">
         <md-button type="submit" ng-click="profileEdit()">
-         Confirm Changes
+         Confirm
         </md-button>
         <md-button ng-click="dialogClose()">
           Cancel

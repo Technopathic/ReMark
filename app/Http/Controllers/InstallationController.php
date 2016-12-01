@@ -37,10 +37,7 @@ class InstallationController extends Controller
       'databaseUser'	        => 	'required',
       'databaseName'			    =>	'required',
       'siteName'              =>  'required',
-      'adminName'             =>  'required',
-      'adminEmail'            =>  'required',
-      'adminPassword'         =>  'required',
-      'passwordConfirm'       =>  'required'
+      'adminEmail'            =>  'required'
     );
     $validator = Validator::make($request->json()->all(), $rules);
 
@@ -53,10 +50,12 @@ class InstallationController extends Controller
 
         $siteName = $request->json('siteName');
 
-        $adminName = $request->json('adminName');
         $adminEmail = $request->json('adminEmail');
-        $adminPassword = $request->json('adminPassword');
-        $passwordConfirm = $request->json('passwordConfirm');
+
+        $emailHost = $request->json('emailHost');
+        $emailPort = $request->json('emailPort');
+        $emailUsername = $request->json('emailName');
+        $emailPassword = $request->json('emailPass');
 
         $connection = mysqli_connect("127.0.0.1", $databaseUser,$databasePassword,$databaseName);
 
@@ -65,46 +64,43 @@ class InstallationController extends Controller
           //Could not connect
           return Response::json(2);
         } else {
-          $checkName = preg_match('/[^A-Z]/i', $adminName);
-          if($checkName === 0){
-            $checkPassword = preg_match('/\s/', $adminPassword);
-            if($checkPassword === 0)
+          $checkEmail = filter_var($adminEmail, FILTER_VALIDATE_EMAIL);
+          if($checkEmail === $adminEmail)
+          {
+
+            $env = base_path()."/.env";
+            $content = file_get_contents($env);
+            $content .= "\n";
+            $content .= "APP_URL=".$request->root()."\n";
+            $content .= "DB_DATABASE=".$databaseName."\n";
+            $content .= "DB_USERNAME=".$databaseUser."\n";
+            $content .= "DB_PASSWORD=".$databasePassword."\n";
+
+            if(empty($emailHost) || empty($emailPort) || empty($emailUsername) || empty($emailPassword))
             {
-              $checkEmail = filter_var($adminEmail, FILTER_VALIDATE_EMAIL);
-              if($checkEmail === $adminEmail)
-              {
-                if($adminPassword != $passwordConfirm)
-                {
-                  //Passwords do not match
-                  return Response::json(3);
-                } else {
-
-                  $env = base_path()."/.env";
-                  $content = file_get_contents($env);
-                  $content .= "\n";
-                  $content .= "APP_URL=".$request->root()."\n";
-                  $content .= "DB_DATABASE=".$databaseName."\n";
-                  $content .= "DB_USERNAME=".$databaseUser."\n";
-                  $content .= "DB_PASSWORD=".$databasePassword."\n";
-                  file_put_contents($env, $content);
-
-                  $adminPassword = Hash::make($adminPassword);
-
-                  //Success
-                  return Response::json(['adminName' => $adminName, 'adminPassword' => $adminPassword, 'adminEmail' => $adminEmail, 'siteName' => $siteName]);
-                  //return Redirect::to('installDB/'.$adminName.'/'.$adminPassword.'/'.$adminEmail.'/'.$siteName);
-                }
-              } else {
-                //Email is not valid
-                return Response::json(4);
-              }
-            } else {
-              //Password cannot contain spaces
-              return Response::json(5);
+              $content .="MAIL_DRIVER=mail"."\n";
+              $content .="MAIL_HOST=null"."\n";
+              $content .="MAIL_PORT=null"."\n";
+              $content .="MAIL_USERNAME=null"."\n";
+              $content .="MAIL_PASSWORD=null"."\n";
+              $content .="MAIL_ENCRYPTION=null"."\n";
             }
+            else {
+              $content .="MAIL_DRIVER=smtp"."\n";
+              $content .="MAIL_HOST=null".$emailHost."\n";
+              $content .="MAIL_PORT=null".$emailPort."\n";
+              $content .="MAIL_USERNAME=null".$emailUsername."\n";
+              $content .="MAIL_PASSWORD=null".$emailPassword."\n";
+              $content .="MAIL_ENCRYPTION=null"."\n";
+            }
+            file_put_contents($env, $content);
+
+            //Success
+            return Response::json(['adminName' => $adminName, 'adminEmail' => $adminEmail, 'siteName' => $siteName]);
+
           } else {
-            //Username cannot contain spaces or special characters
-            return Response::json(6);
+            //Email is not valid
+            return Response::json(4);
           }
         }
       }
@@ -114,7 +110,6 @@ class InstallationController extends Controller
     {
       $rules = array(
         'adminName'          =>   'required',
-        'adminPassword'	     =>   'required',
         'adminEmail'			   =>   'required',
         'siteName'           =>   'required'
       );
@@ -125,9 +120,11 @@ class InstallationController extends Controller
       } else {
 
         $adminName = $request->json('adminName');
-        $adminPassword = $request->json('adminPassword');
         $adminEmail = $request->json('adminEmail');
         $siteName = $request->json('siteName');
+
+        $adminName = explode("@", $adminEmail);
+        $adminName = $adminName[0];
 
         Artisan::call('cache:clear');
         Artisan::call('key:generate');
@@ -137,7 +134,7 @@ class InstallationController extends Controller
         $sub = substr($adminName, 0, 2);
         $avatar = "https://invatar0.appspot.com/svg/".$sub.".jpg?s=100";
         DB::table('options')->insert(array('id' => 1, 'owner' => 1, 'website' => $siteName, 'baseurl' => $request->root()));
-        DB::table('users')->insert(array('id' => 1, 'name' => $adminName, 'email' => $adminEmail, 'password' => $adminPassword, 'avatar' => $avatar, 'displayName' => $adminName, 'role' => 1, 'activated' => 1));
+        DB::table('users')->insert(array('id' => 1, 'name' => $adminName, 'email' => $adminEmail, 'avatar' => $avatar, 'displayName' => $adminName, 'role' => 1, 'activated' => 1));
 
         Artisan::call('db:seed', ['--env' => 'production', '--force' => true]);
 

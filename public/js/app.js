@@ -46,12 +46,6 @@ angular.module('remark', ['ui.router', 'angular-loading-bar', 'angularMoment', '
     }
   })
 
-  .state('passwordReset', {
-    url: '/passwordReset/:token',
-    templateUrl: 'views/auth.html',
-    controller: 'AuthCtrl'
-  })
-
   .state('main', {
     templateUrl: 'views/main.html',
     controller: 'MainCtrl',
@@ -105,10 +99,10 @@ angular.module('remark', ['ui.router', 'angular-loading-bar', 'angularMoment', '
     }
   })
 
-  .state('main.notify', {
-    url: '/notify/:notifyType/:token',
-    templateUrl: 'views/notify.html',
-    controller: 'NotifyCtrl'
+  .state('main.confirm', {
+    url: '/confirm/:token',
+    templateUrl: 'views/confirm.html',
+    controller: 'ConfirmCtrl'
   })
 
   .state('dashboard', {

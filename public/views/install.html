@@ -24,6 +24,28 @@
         </md-input-container>
       </div>
     </section>
+    <section id="email">
+      <h1>Email</h1>
+      <md-divider></md-divider>
+      <div class="input-section" flex="40">
+        <md-input-container class="md-block">
+          <label>Host</label>
+          <input ng-model="installData.emailHost">
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label>Port</label>
+          <input ng-model="installData.emailPort">
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label>Username</label>
+          <input ng-model="installData.emailName">
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label>Password</label>
+          <input type="password" ng-model="installData.emailPass">
+        </md-input-container>
+      </div>
+    </section>
     <section id="info">
       <h1>Info</h1>
       <md-divider></md-divider>

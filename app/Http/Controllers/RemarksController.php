@@ -61,6 +61,20 @@ class RemarksController extends Controller
       }
     }
 
+    public function staticIndex()
+    {
+      $options = Option::select('website', 'baseurl', 'siteLogo', 'homeBanner', 'aboutWebsite', 'allowAsk', 'allowSubscription', 'homePage')->first();
+      $pages = Mtopic::where('pageMenu', '=', 1)->orderBy('id', 'ASC')->select('id', 'topicTitle', 'topicSlug')->get();
+      $channels = Mchannel::select('id', 'channelTitle', 'channelSlug')->get();
+      $topics = Mtopic::where('mtopics.topicStatus', '=', 'Published')->join('mchannels', 'mtopics.topicChannel', '=', 'mchannels.id')->join('users', 'mtopics.topicAuthor', '=', 'users.id')->orderBy('mtopics.created_at', 'DESC')->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicSlug', 'mtopics.topicBody', 'mtopics.topicThumbnail', 'mtopics.created_at', 'mtopics.topicReplies', 'mtopics.topicViews', 'mtopics.topicChannel', 'mchannels.channelTitle', 'mtopics.topicType', 'users.displayName', 'users.name', 'users.avatar')->paginate(12);
+
+      return view('static.index')
+        ->with('options', $options)
+        ->with('pages', $pages)
+        ->with('channels', $channels)
+        ->with('topics', $topics);
+    }
+
     public function staticChannel($slug)
     {
       if(Crawler::isCrawler()) {
@@ -429,8 +443,6 @@ class RemarksController extends Controller
       $displayName = Purifier::clean($request->input('displayName'));
       $email = Purifier::clean($request->input('email'));
       $avatar = $request->file('avatar');
-      $password = Purifier::clean($request->input('password'));
-      $confirm = Purifier::clean($request->input('confirmPassword'));
       $emailReply = Purifier::clean($request->input('emailReply'));
       $emailDigest = Purifier::clean($request->input('emailDigest'));
 
@@ -491,16 +503,6 @@ class RemarksController extends Controller
           }
 
           $profile->avatar = $avatar;
-        }
-      }
-      if($password != NULL)
-      {
-        if($password === $confirm)
-        {
-          $password = Hash::make($password);
-          $profile->password = $password;
-        } else {
-          return Response::json(0);
         }
       }
 

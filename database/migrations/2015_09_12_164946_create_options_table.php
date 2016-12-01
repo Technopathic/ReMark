@@ -21,7 +21,6 @@ class CreateOptionsTable extends Migration
         $table->integer('homePage')->default(0);
         $table->boolean('homeBanner')->default(1);
         $table->boolean('allowRegistration')->default(1);
-        $table->boolean('allowSubscription')->default(1);
         $table->boolean('requireActivation')->default(0);
         $table->boolean('replyModeration')->default(0);
         $table->boolean('allowAsk')->default(1);

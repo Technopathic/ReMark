@@ -89,6 +89,13 @@
         color:#222222;
       }
 
+      .notice {
+        padding:15px;
+        border:1px solid #0099FF;
+        background:#99FFFF;
+        color:#0099FF;
+      }
+
     </style>
   </head>
   <body>
@@ -101,6 +108,7 @@
           @endforeach
         </ul>
       </div>
+      <div class="notice">This website uses JavaScript. Please enable it to have the full experience.</div>
       @foreach($topics as $key => $value)
         <div class="topic">
           <div class="topicHead">
@@ -108,7 +116,7 @@
             <br/>
             <div class="topicDate">{{ date('D Y/m/d H:i T', strtotime($value->created_at)) }}</div>
           </div>
-          <div class="topicImg"><img src="{!! $value->topicThumbnail !!}" /></div>
+          <div class="topicImg"><img src="/{!! $value->topicThumbnail !!}" /></div>
           <div class="topicDesc">{!! Markdown::convertToHtml(html_entity_decode($value->topicBody)) !!}</div>
         </div>
       @endforeach

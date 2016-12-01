@@ -156,8 +156,6 @@ angular.module('remark.controllers', [])
 .controller('AuthCtrl', ['$scope', '$state', '$http', '$rootScope', '$mdDialog', '$mdToast', '$stateParams', function($scope, $state, $http, $rootScope, $mdDialog, $mdToast, $stateParams) {
 
   $scope.auth = {};
-  $scope.resetData = {};
-  $scope.passwordForgot = false;
 
   $scope.state = $state.current.name;
 
@@ -171,18 +169,6 @@ angular.module('remark.controllers', [])
     );
   };
 
-  $scope.toggleReset = function()
-  {
-    if($scope.passwordForgot == false)
-    {
-      $scope.passwordForgot = true;
-    }
-    else if($scope.passwordForgot == true)
-    {
-      $scope.passwordForgot = false;
-    }
-  };
-
   $scope.authDialog = function(ev) {
     $mdDialog.show({
         templateUrl: 'views/templates/auth.html',
@@ -194,174 +180,60 @@ angular.module('remark.controllers', [])
       });
     };
 
-  $scope.doSignUp = function() {
-    $http({
-        method: 'POST',
-        url: 'api/signUp',
-        data: {email: $scope.auth.email, username: $scope.auth.username, password: $scope.auth.password},
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-    }).success(function(data){
-      if(data == 2)
-      {
-        $scope.notifyToast('That Email is already Registered.');
-      }
-      else if(data == 3)
-      {
-        $scope.notifyToast('That Username is already Registered.');
-      }
-      else if(data == 5)
-      {
-        $scope.notifyToast('Registration is not allowed.');
-      }
-      else if(data == 6)
-      {
-        $scope.notifyToast('Success! Please check your email.');
-        $mdDialog.hide();
-      }
-      else if(data == 1)
-      {
-        $scope.notifyToast('Successful Sign Up! Life is Great!');
-
-        $http({
-            method: 'POST',
-            url: 'api/authenticate',
-            data: {email: $scope.auth.email, password: $scope.auth.password},
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-        }).success(function(data) {
-          if(data == 3)
-          {
-            $scope.notifyToast('Please check your email and confirm your account.');
-          }
-          else {
-            var token = JSON.stringify(data.token);
-            localStorage.setItem('token', token);
-            $rootScope.currentToken = data.token;
-            $http.get('api/authenticate/user?token='+ data.token)
-            .success(function(data) {
-              var user = JSON.stringify(data.user);
-
-              localStorage.setItem('user', user);
-              $rootScope.authenticated = true;
-              $rootScope.currentUser = data.user;
-              if(data.user.activated == 0)
-              {
-                $scope.notifyToast('Please confirm your account.');
-              }
-              else if(data.user.activated == 1)
-              {
-                $scope.notifyToast('Welcome, '+data.user.name+'!');
-              }
-            });
-          }
-        });
-        $mdDialog.hide();
-      }
-    });
-  };
-
   $scope.doAuth = function() {
     $http({
         method: 'POST',
-        url: 'api/authenticate',
-        data: {email: $scope.auth.email, password: $scope.auth.password},
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-    })
-    .success(function(data) {
-      if(data == 2)
-      {
-        $scope.notifyToast('Wrong Email!');
-      }
-      else if(data == 0)
-      {
-        $scope.notifyToast('Sorry, looks like you were banned.');
-      }
-      else if(data == 3)
-      {
-        $scope.notifyToast('Please check your email and confirm your account.');
-      }
-      else
-      {
-        var token = JSON.stringify(data.token);
-        localStorage.setItem('token', token);
-        $rootScope.currentToken = data.token;
-        $http.get('api/authenticate/user?token='+ data.token)
-        .success(function(data) {
-          var user = JSON.stringify(data.user);
-
-          localStorage.setItem('user', user);
-          $rootScope.authenticated = true;
-          $rootScope.currentUser = data.user;
-
-          if(data.user.activated == 0)
-          {
-            $scope.notifyToast('Please confirm your account.');
-          }
-          else if(data.user.activated == 1)
-          {
-            $scope.notifyToast('Welcome Back, '+data.user.name+'!');
-          }
-        });
-        $mdDialog.hide();
-      }
-    }).error(function(data) {
-      $scope.notifyToast('Login Incorrect.');
-    });
-  };
-
-  $scope.resetPassword = function() {
-    $http({
-        method: 'POST',
-        url: 'api/authenticate',
-        data: {resetId: $scope.resetData.resetId},
+        url: 'api/checkEmail',
+        data: {email: $scope.auth.email},
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     })
     .success(function(data) {
       if(data == 1)
       {
-        $scope.notifyToast('A password reset form has been sent to your email.');
+        $http({
+            method: 'POST',
+            url: 'api/signUp',
+            data: {email: $scope.auth.email},
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+        .success(function(data) {
+          if(data == 1)
+          {
+            $scope.notifyToast('Thanks for signing up! Please check your email to sign in.');
+          }
+          else if(data == 2)
+          {
+            $scope.notifyToast('Email is already registered.');
+          }
+          else if(data == 3)
+          {
+            $scope.notifyToast('Username is already registered.');
+          }
+          else if(data == 5)
+          {
+            $scope.notifyToast('Signing up is not allowed.');
+          }
+
+          $scope.dialogClose();
+        });
       }
-      else if(data == 2)
+      if(data == 2)
       {
-        $scope.notifyToast('We could not find that email address.');
-      }
-      else if(data == 3)
-      {
-        $scope.notifyToast('We could not find that username.');
+        $scope.notifyToast('Check your email to Sign In.');
       }
       else if(data == 0)
       {
-        $scope.notifyToast('Please enter a valid Email or Username.');
+        $scope.notifyToast('Sorry, looks like you were banned.');
       }
-    }).error(function() {
-      $scope.notifyToast('This should not happen.');
-    });
-  };
+      else if(data == 5)
+      {
+        $scope.notifyToast('Signing In is not allowed.');
+      }
 
-  $scope.confirmReset = function() {
-    $http({
-        method: 'POST',
-        url: 'api/confirmReset/'+$stateParams.token,
-        data: {newPassword: $scope.resetData.newPassword, confirmPassword: $scope.resetData.confirmPassword},
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-    })
-    .success(function(data) {
-      if(data == 0)
-      {
-        $scope.notifyToast('Token not found.');
-      }
-      else if(data == 1)
-      {
-        $scope.notifyToast('Your password has been reset! You can now Sign In.');
-        $state.go('auth');
-      }
-      else if(data == 2)
-      {
-        $scope.notifyToast('This reset form has expired after 24 hours.');
-      }
-      else if(data == 3)
-      {
-        $scope.notifyToast('Your passwords do not match.');
-      }
+      $scope.dialogClose();
+
+    }).error(function(data) {
+      $scope.notifyToast('Login Incorrect.');
     });
   };
 
@@ -450,18 +322,12 @@ angular.module('remark.controllers', [])
         displayName: $scope.profile.displayName,
         email: $scope.profile.email,
         avatar: $scope.profile.avatar,
-        password: $scope.profile.newPassword,
-        confirmPassword: $scope.profile.confirmPassword,
         emailDigest: $scope.profile.emailDigest,
         emailReply: $scope.profile.emailReply
       },
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     }).success(function(data){
-      if(data == 0)
-      {
-        $scope.notifyToast('Your passwords do not match.');
-      }
-      else if(data == 2)
+      if(data == 2)
       {
         $scope.notifyToast('Your file is over 2MB.');
       }
@@ -516,7 +382,7 @@ angular.module('remark.controllers', [])
   $http.get('api/getInfo').success(function(data) {
     $rootScope.metaservice.set(data.website, data.aboutWebsite, "");
   });
-  
+
 }])
 
 
@@ -701,67 +567,55 @@ angular.module('remark.controllers', [])
   $scope.getProfile();
 }])
 
-.controller('NotifyCtrl', ['$scope', '$state', '$stateParams', '$http', '$timeout', function($scope, $state, $stateParams, $http, $timeout) {
+.controller('ConfirmCtrl', ['$scope', '$rootScope', '$state', '$stateParams', '$mdToast', '$http', '$timeout', function($scope, $rootScope, $state, $stateParams, $mdToast, $http, $timeout) {
 
-  $scope.notifyType = $stateParams.notifyType;
-  $scope.notifyToken = $stateParams.token;
-  $scope.notifyMessage = null;
+  $scope.token = $stateParams.token;
+  $scope.confirmMessage = null;
 
-  $scope.confirmSubscription = function() {
-    $http({
-        method: 'POST',
-        url: 'api/confirmSubscription',
-        data: {token: $scope.notifyToken},
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-    }).success(function(data){
-      if(data == 0)
-      {
-        $scope.notifyMessage = "You're already a follower."
-      }
-      else if(data == 1)
-      {
-        $scope.notifyMessage = "Thank you for Following!";
-      }
-      else if(data == 2)
-      {
-        $scope.notifyMessage = "Token not found.";
-      }
-    });
+  $scope.notifyToast = function(message) {
+    $mdToast.show(
+      $mdToast.simple()
+        .textContent(message)
+        .position('top right')
+        .hideDelay(3000)
+    );
   };
-
   $scope.confirmToken = function() {
     $http({
         method: 'POST',
-        url: 'api/confirmToken',
-        data: {token: $scope.notifyToken},
+        url: 'api/signIn',
+        data: {token: $scope.token},
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     }).success(function(data){
       if(data == 0)
       {
-        $scope.notifyMessage = "You're already activated."
-      }
-      else if(data == 1)
-      {
-        $scope.notifyMessage = "Thanks for signing up!";
+        $scope.notifyToast('You were banned.');
       }
       else if(data == 2)
       {
-        $scope.notifyMessage = "Token not found.";
+        $scope.notifyToast('Token not found or expired.');
       }
+      else
+      {
+        var token = JSON.stringify(data.token);
+        localStorage.setItem('token', token);
+        $rootScope.currentToken = data.token;
+        $http.get('api/authenticate/user?token='+ data.token)
+        .success(function(data) {
+          var user = JSON.stringify(data.user);
+
+          localStorage.setItem('user', user);
+          $rootScope.authenticated = true;
+          $rootScope.currentUser = data.user;
+
+          $state.go('main.home');
+        });
+      }
+    }).finally(function(){
+      $scope.notifyToast('Welcome Back, '+$rootScope.currentUser.displayName+'!');
     });
   };
 
-  if($scope.notifyType == "confirmSubscription")
-  {
-    $scope.confirmSubscription();
-  }
-  else if($scope.notifyType == "confirmation")
-  {
-    $scope.confirmSubscription();
-  }
+  $scope.confirmToken();
 
-
-  $timeout(function() {
-      $state.go('main.home');
-  },10000);
 }])

@@ -16,7 +16,6 @@ class CreateUsersTable extends Migration
          $table->increments('id');
          $table->string('name', 16);
          $table->string('email', 64);
-         $table->string('password', 128);
          $table->string('displayName', 16)->nullable();
          $table->longText('avatar');
          $table->boolean('emailDigest')->default(1);

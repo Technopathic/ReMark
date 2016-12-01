@@ -1186,19 +1186,6 @@ angular.module('remark.dashboard', [])
     });
   };
 
-  $scope.resetPassword = function(id) {
-    $http.get('dashboard/resetPassword/'+id+'?token='+$rootScope.currentToken)
-    .success(function (data){
-      if(data == 1)
-      {
-        $scope.notifyToast('A password reset email was sent to the user.');
-      }
-      else {
-        $scope.notifyToast('User Already Active.');
-      }
-    });
-  };
-
   $scope.activateUser = function(id) {
     $http.get('dashboard/activateUser/'+id+'?token='+$rootScope.currentToken)
     .success(function (data){
@@ -1358,7 +1345,7 @@ angular.module('remark.dashboard', [])
   };
 
   $scope.doAddUser = function() {
-    var res = {newUserName: $scope.user.name, newUserEmail: $scope.user.email, newUserPassword:$scope.user.password};
+    var res = {newUserName: $scope.user.name, newUserEmail: $scope.user.email};
     var res = JSON.stringify(res);
 
     $http({
@@ -1453,18 +1440,12 @@ angular.module('remark.dashboard', [])
         displayName: $scope.profile.displayName,
         email: $scope.profile.email,
         avatar: $scope.profile.avatar,
-        password: $scope.profile.newPassword,
-        confirmPassword: $scope.profile.confirmPassword,
         emailReply: $scope.profile.emailReply,
         emailDigest: $scope.profile.emailDigest
       },
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     }).success(function(data){
-      if(data == 0)
-      {
-        $scope.notifyToast('Your passwords do not match.');
-      }
-      else if(data != 0)
+      if(data != 0)
       {
         $scope.notifyToast('Successfully Updated Profile.');
         $scope.users.splice(userData.index, 1);
@@ -1519,7 +1500,6 @@ angular.module('remark.dashboard', [])
   $scope.apps = optionData.data.apps;
 
   $scope.options.allowRegistration = Number($scope.options.allowRegistration);
-  $scope.options.allowSubscription = Number($scope.options.allowSubscription);
   $scope.options.requireActivation = Number($scope.options.requireActivation);
   $scope.options.replyModeration = Number($scope.options.replyModeration);
   $scope.options.homeBanner = Number($scope.options.homeBanner);
@@ -1543,7 +1523,6 @@ angular.module('remark.dashboard', [])
           siteLogo:$scope.options.siteLogo,
           homePage: $scope.options.homePage,
           allowRegistration: $scope.options.allowRegistration,
-          allowSubscription: $scope.options.allowSubscription,
           requireActivation: $scope.options.requireActivation,
           replyModeration: $scope.options.replyModeration,
           allowAsk: $scope.options.allowAsk,
@@ -1679,10 +1658,11 @@ angular.module('remark.dashboard', [])
           databaseName:$scope.installData.databaseName,
           databasePassword:$scope.installData.databasePassword,
           siteName:$scope.installData.siteName,
-          adminName:$scope.installData.adminName,
           adminEmail:$scope.installData.adminEmail,
-          adminPassword:$scope.installData.adminPassword,
-          passwordConfirm:$scope.installData.passwordConfirm
+          emailHost:$scope.installData.emailHost,
+          emailPort:$scope.installData.emailPort,
+          emailName:$scope.installData.emailName,
+          emailPass:$scope.installData.emailPass
         },
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     }).success(function (data){
@@ -1694,33 +1674,22 @@ angular.module('remark.dashboard', [])
       {
         $scope.notifyToast('Could not connect to the database.');
       }
-      else if(data == 3)
-      {
-        $scope.notifyToast('Passwords do not match.');
-      }
       else if(data == 4)
       {
         $scope.notifyToast('Email is not valid.');
-      }
-      else if(data == 5)
-      {
-        $scope.notifyToast('Passwords cannot contain spaces.');
-      }
-      else if(data == 6)
-      {
-        $scope.notifyToast('Username cannot contain spaces or special characters.');
       }
       else {
         $scope.notifyToast('Success!');
         $http({
             method: 'POST',
             url: 'installAPIDB',
-            data: {adminName:data.adminName, adminPassword:data.adminPassword, adminEmail:data.adminEmail, siteName:data.siteName},
+            data: {adminName:data.adminName, adminEmail:data.adminEmail, siteName:data.siteName},
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function (data) {
           if(data == 1)
           {
-            $scope.notifyToast('ReMark has been Successfully Installed!');
+            $scope.notifyToast('ReMark has been Successfully Installed! Check your Email to Sign In.');
+
             $state.go('main.home');
           } else {
             $scope.notifyToast('This should not happen. Get help.');

@@ -82,28 +82,6 @@ class UsersController extends Controller
     }
   }
 
-  public function resetPassword($id) {
-    $user = Auth::user();
-    if($user->role == 1)
-    {
-      $user = User::find($id);
-
-      if(!empty($user))
-      {
-        Mail::send('emails.resetPassword', ['user' => $user], function ($m) use ($user) {
-            $m->to($user->email)->subject('Password Reset');
-        });
-
-        return Response::json(1);
-      }
-      else {
-        return Response::json(0);
-      }
-    } else {
-      return Response::json(403);
-    }
-  }
-
   public function activateUser($id) {
     $user = Auth::user();
     if($user->role == 1)
@@ -156,8 +134,7 @@ class UsersController extends Controller
     {
       $rules = array(
         'newUserEmail'	        => 	'required',
-        'newUserName'			=>	'required',
-        'newUserPassword'			=>	'required'
+        'newUserName'			=>	'required'
       );
       $validator = Validator::make($request->json()->all(), $rules);
 
@@ -167,7 +144,6 @@ class UsersController extends Controller
 
         $email = $request->json('newUserEmail');
         $username = $request->json('newUserName');
-        $password = $request->json('newUserPassword');
 
         $username = preg_replace('/[^A-Z]/i', "" ,$username);
         $sub = substr($username, 0, 2);
@@ -182,7 +158,6 @@ class UsersController extends Controller
           $user = new User;
           $user->email = $email;
           $user->name = $username;
-          $user->password = Hash::make($password);
           $user->displayName = $username;
           $user->avatar = "https://invatar0.appspot.com/svg/".$sub.".jpg?s=100";
           $user->role = $role->roleName;
@@ -222,8 +197,6 @@ class UsersController extends Controller
       $displayName = $request->input('displayName');
       $email = $request->input('email');
       $avatar = $request->file('avatar');
-      $password = $request->input('password');
-      $confirm = $request->input('confirm');
       $emailReply = $request->input('emailReply');
       $emailDigest = $request->input('emailDigest');
 
@@ -279,17 +252,6 @@ class UsersController extends Controller
         }
 
         $profile->avatar = $avatar;
-      }
-
-      if($password != NULL)
-      {
-        if($password === $confirm)
-        {
-          $password = Hash::make($password);
-          $profile->password = $password;
-        } else {
-          return Response::json(0);
-        }
       }
 
       $profile->save();
