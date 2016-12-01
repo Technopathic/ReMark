@@ -561,8 +561,6 @@ class DashboardController extends Controller
         $options->siteLogo = $request->json('siteLogo');
         $options->homePage = $request->json('homePage');
         $options->allowRegistration = $request->json('allowRegistration');
-        $options->allowSubscription = $request->json('allowSubscription');
-        $options->requireActivation = $request->json('requireActivation');
         $options->replyModeration = $request->json('replyModeration');
         $options->aboutWebsite = $request->json('aboutWebsite');
         $options->homeBanner = $request->json('homeBanner');

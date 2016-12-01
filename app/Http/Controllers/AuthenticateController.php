@@ -229,26 +229,4 @@ class AuthenticateController extends Controller
     return Response::json($token);
   }
 
-  public function unSubscribe($token)
-  {
-    $subscription = Subscription::where('subscriptionID', '=', $token)->first();
-
-    if(!empty($subscription))
-    {
-      if($subscription->subscriptionActive == true)
-      {
-        $subscription->subscriptionActive = false;
-        $subscription->save();
-        //Unsubscribed
-        return Response::json(1);
-      }
-      else {
-        //Not subscribed
-        return Response::json(0);
-      }
-    } else {
-      //Token not found
-      return Response::json(2);
-    }
-  }
 }

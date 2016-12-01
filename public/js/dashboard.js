@@ -1500,7 +1500,6 @@ angular.module('remark.dashboard', [])
   $scope.apps = optionData.data.apps;
 
   $scope.options.allowRegistration = Number($scope.options.allowRegistration);
-  $scope.options.requireActivation = Number($scope.options.requireActivation);
   $scope.options.replyModeration = Number($scope.options.replyModeration);
   $scope.options.homeBanner = Number($scope.options.homeBanner);
   $scope.options.allowAsk = Number($scope.options.allowAsk);
@@ -1523,7 +1522,6 @@ angular.module('remark.dashboard', [])
           siteLogo:$scope.options.siteLogo,
           homePage: $scope.options.homePage,
           allowRegistration: $scope.options.allowRegistration,
-          requireActivation: $scope.options.requireActivation,
           replyModeration: $scope.options.replyModeration,
           allowAsk: $scope.options.allowAsk,
           homeBanner: $scope.options.homeBanner,
