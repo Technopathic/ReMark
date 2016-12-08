@@ -49,7 +49,6 @@ class InstallationController extends Controller
         $databaseName = $request->json('databaseName');
 
         $siteName = $request->json('siteName');
-
         $adminEmail = $request->json('adminEmail');
 
         $emailHost = $request->json('emailHost');
@@ -87,16 +86,16 @@ class InstallationController extends Controller
             }
             else {
               $content .="MAIL_DRIVER=smtp"."\n";
-              $content .="MAIL_HOST=null".$emailHost."\n";
-              $content .="MAIL_PORT=null".$emailPort."\n";
-              $content .="MAIL_USERNAME=null".$emailUsername."\n";
-              $content .="MAIL_PASSWORD=null".$emailPassword."\n";
-              $content .="MAIL_ENCRYPTION=null"."\n";
+              $content .="MAIL_HOST=".$emailHost."\n";
+              $content .="MAIL_PORT=".$emailPort."\n";
+              $content .="MAIL_USERNAME=".$emailUsername."\n";
+              $content .="MAIL_PASSWORD=".$emailPassword."\n";
+              $content .="MAIL_ENCRYPTION="."\n";
             }
             file_put_contents($env, $content);
 
             //Success
-            return Response::json(['adminName' => $adminName, 'adminEmail' => $adminEmail, 'siteName' => $siteName]);
+            return Response::json(['adminEmail' => $adminEmail, 'siteName' => $siteName]);
 
           } else {
             //Email is not valid
@@ -109,7 +108,6 @@ class InstallationController extends Controller
     public function installAPIDB(Request $request)
     {
       $rules = array(
-        'adminName'          =>   'required',
         'adminEmail'			   =>   'required',
         'siteName'           =>   'required'
       );
@@ -119,7 +117,6 @@ class InstallationController extends Controller
         return Response::json(0);
       } else {
 
-        $adminName = $request->json('adminName');
         $adminEmail = $request->json('adminEmail');
         $siteName = $request->json('siteName');
 

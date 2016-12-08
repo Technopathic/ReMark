@@ -114,6 +114,13 @@
 
       <md-tab label="My Feeds">
         <div layout="row" layout-sm="column" layout-xs="column" layout-wrap layout-padding>
+          <div flex="100" flex-gt-sm="25" ng-click="installFeed($event)">
+            <md-card class="feedBox">
+              <div class="feedImage" layout="column" layout-align="center center">
+                <img ng-src="/img/uploadIcon.png" class="md-card-image">
+              </div>
+            </md-card>
+          </div>
           <div flex="100" flex-gt-sm="25" ng-repeat="feed in feeds" ng-click="selectFeed(feed.id)">
             <md-card class="feedBox">
               <div class="feedImage" layout="column" layout-align="center center">
@@ -221,6 +228,22 @@
         <div class="md-dialog-actions" layout="column" layout-align="center center">
           <md-button ng-click="customFeed()" flex="100">
             Get Feed
+          </md-button>
+        </div>
+      </md-dialog-content>
+    </div>
+  </md-dialog>
+</script>
+
+<script type="text/ng-template" id="showInstallFeed.html">
+  <md-dialog aria-label="Feed Upload" flex="50">
+    <div layout="column" layout-padding>
+      <md-dialog-content>
+        <input ngf-select="" class="ng-hide" ng-model="inputFeed.feedFile" id="makeFeed" ngf-accept="'application/*'" type="file" ngf-max-size="5MB" aria-label="FeedUp"/>
+        <label for="makeFeed" class="md-button"><md-icon class="material-icons">attach_file</md-icon> Select a Feed Zip</label>
+        <div class="md-dialog-actions" layout="column" layout-align="center center">
+          <md-button ng-click="uploadFeed()" flex="100">
+            Install Feed
           </md-button>
         </div>
       </md-dialog-content>

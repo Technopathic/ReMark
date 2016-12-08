@@ -45,7 +45,7 @@ class RemarksController extends Controller
     public function index()
     {
       if(Crawler::isCrawler()) {
-        $options = Option::select('website', 'baseurl', 'siteLogo', 'homeBanner', 'aboutWebsite', 'allowAsk', 'allowSubscription', 'homePage')->first();
+        $options = Option::select('website', 'baseurl', 'siteLogo', 'homeBanner', 'aboutWebsite', 'allowAsk', 'homePage')->first();
         $pages = Mtopic::where('pageMenu', '=', 1)->orderBy('id', 'ASC')->select('id', 'topicTitle', 'topicSlug')->get();
         $channels = Mchannel::select('id', 'channelTitle', 'channelSlug')->get();
         $topics = Mtopic::where('mtopics.topicStatus', '=', 'Published')->join('mchannels', 'mtopics.topicChannel', '=', 'mchannels.id')->join('users', 'mtopics.topicAuthor', '=', 'users.id')->orderBy('mtopics.created_at', 'DESC')->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicSlug', 'mtopics.topicBody', 'mtopics.topicThumbnail', 'mtopics.created_at', 'mtopics.topicReplies', 'mtopics.topicViews', 'mtopics.topicChannel', 'mchannels.channelTitle', 'mtopics.topicType', 'users.displayName', 'users.name', 'users.avatar')->paginate(12);
@@ -63,7 +63,7 @@ class RemarksController extends Controller
 
     public function staticIndex()
     {
-      $options = Option::select('website', 'baseurl', 'siteLogo', 'homeBanner', 'aboutWebsite', 'allowAsk', 'allowSubscription', 'homePage')->first();
+      $options = Option::select('website', 'baseurl', 'siteLogo', 'homeBanner', 'aboutWebsite', 'allowAsk', 'homePage')->first();
       $pages = Mtopic::where('pageMenu', '=', 1)->orderBy('id', 'ASC')->select('id', 'topicTitle', 'topicSlug')->get();
       $channels = Mchannel::select('id', 'channelTitle', 'channelSlug')->get();
       $topics = Mtopic::where('mtopics.topicStatus', '=', 'Published')->join('mchannels', 'mtopics.topicChannel', '=', 'mchannels.id')->join('users', 'mtopics.topicAuthor', '=', 'users.id')->orderBy('mtopics.created_at', 'DESC')->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicSlug', 'mtopics.topicBody', 'mtopics.topicThumbnail', 'mtopics.created_at', 'mtopics.topicReplies', 'mtopics.topicViews', 'mtopics.topicChannel', 'mchannels.channelTitle', 'mtopics.topicType', 'users.displayName', 'users.name', 'users.avatar')->paginate(12);
@@ -125,7 +125,7 @@ class RemarksController extends Controller
     public function main()
     {
       $pages = Mtopic::where('pageMenu', '=', 1)->orderBy('id', 'ASC')->select('id', 'topicTitle', 'topicSlug')->get();
-      $options = Option::select('website', 'baseurl', 'siteLogo', 'homeBanner', 'aboutWebsite', 'allowAsk', 'allowSubscription', 'homePage')->first();
+      $options = Option::select('website', 'baseurl', 'siteLogo', 'homeBanner', 'aboutWebsite', 'allowAsk', 'homePage')->first();
 
       return Response::json(['pages' => $pages, 'options' => $options]);
     }

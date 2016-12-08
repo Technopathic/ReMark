@@ -17,6 +17,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => 'cors'], function()
   Route::get('getBookmarks', 'DashboardController@getBookmarks');
   Route::post('bookmarkFeed', 'DashboardController@bookmarkFeed');
   Route::post('unBookmarkFeed', 'DashboardController@unBookmarkFeed');
+  Route::post('installFeed', 'DashboardController@installFeed');
 
   Route::get('notifications', 'DashboardController@getNotifications');
   Route::get('showNotifications/{type}', 'DashboardController@showNotifications');

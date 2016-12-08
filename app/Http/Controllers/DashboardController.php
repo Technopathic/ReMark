@@ -156,6 +156,74 @@ class DashboardController extends Controller
     }
   }
 
+  public function installFeed(Request $request)
+  {
+    $auth = Auth::user();
+
+    if($auth->role == 1)
+    {
+      $rules = array(
+        'feed' => 'required'
+      );
+      $validator = Validator::make($request->json()->all(), $rules);
+
+      if ($validator->fails()) {
+          return Response::json(0);
+      } else {
+
+        $feedFile = $request->file('feed');
+
+        $feedMime = $feedFile->getMimeType();
+
+        if($feedMime !=  'application/zip')
+        {
+          return Response::json(2);
+        }
+        else {
+
+          $feedName = pathinfo($feedFile->getClientOriginalName(), PATHINFO_FILENAME);
+          $feedName = preg_replace("/ /","-",$feedName);
+
+
+          $feedDir = base_path().'/storage/feeds/installed/'.$feedName;
+          $zip = new ZipArchive;
+          if($zip->open($feedFile) === true) {
+            $zip->extractTo($feedDir);
+            $zip->close();
+          }
+
+          $info = file_get_contents(base_path().'/storage/feeds/installed/'.$feedName.'/feed.json');
+          $info = json_decode($info, true);
+
+          $feed = new Feed;
+
+          $feed->feedUrl = $info['info']['source'];
+          $feed->feedName = $info['info']['title'];
+          $feed->feedImg = $info['info']['icon'];
+          $feed->feedDesc = $info['info']['description'];
+          $feed->feedLoc = base_path().'/storage/feeds/installed/'.$feedName;
+          $feed->feedTags = $info['info']['tags'];
+          if(!empty($info['info']['type']))
+          {
+            $feed->feedType = $info['info']['type'];
+          }
+          if(!empty($info['info']['api']))
+          {
+            $feed->feedAPI = $info['info']['api'];
+          }
+          $feed->save();
+
+          $feedData = Feed::where('id', '=', $feed->id)->select('id', 'feedUrl', 'feedName', 'feedTags', 'feedImg', 'feedLoc', 'created_at')->first();
+          return Response::json($feedData);
+        }
+      }
+    }
+    
+    else {
+      return Response::json(403);
+    }
+  }
+
   public function runFeed(Request $request)
   {
     $auth = Auth::user();

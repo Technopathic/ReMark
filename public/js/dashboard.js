@@ -236,6 +236,47 @@ angular.module('remark.dashboard', [])
     });
   };
 
+  $scope.installFeed = function(ev) {
+    $mdDialog.show({
+      templateUrl:'showInstallFeed.html',
+      parent: angular.element(document.body),
+      targetEvent: ev,
+      clickOutsideToClose:true,
+      scope:$scope.$new(),
+      preserveScope:true,
+      controller:
+        function($scope, $rootScope, $mdDialog, $mdToast, Upload) {
+          $scope.inputFeed = null
+
+          $scope.closeDialog = function() {
+            $mdDialog.hide();
+          };
+
+          $scope.uploadFeed = function() {
+            Upload.upload({
+              url: 'dashboard/installFeed?token='+$rootScope.currentToken,
+              data: {
+                "feed": $scope.inputFeed.feedFile
+              },
+              headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            }).success(function(data){
+              if(data == 2) {
+                $scope.notifyToast('Not a valid ZIP.');
+              } else if(data == 403) {
+                $scope.notifyToast('Permission Denied.');
+              } else if(data == 0) {
+                $scope.notifyToast('Nothing to Upload.');
+              } else {
+                $scope.notifyToast('Feed installed.');
+                $scope.feeds.push(data);
+                $scope.closeDialog();
+              }
+            });
+          }
+        }
+    })
+  };
+
   $scope.runFeed = function(ev, feed, input = "false") {
     if(input == "true" )
     {
@@ -1133,26 +1174,27 @@ angular.module('remark.dashboard', [])
   $scope.stopAutoSave = function() {
     $interval.cancel(saveInterval);
   };
+
   $scope.autoSave = function() {
 
     $scope.stopAutoSave();
 
-    saveInterval = $interval(function() {
-      if($scope.topicData.topicID === undefined)
-      {
-        if($scope.topicData.topicType == 'Blog')
-        {
-          $scope.doTopic('Draft');
-        }
-      } else if($scope.topicData.topicID !== undefined)
-      {
-        if($scope.topicData.topicType == 'Blog')
-        {
-          $scope.updateTopic($scope.topicData.topicID, 'Draft');
-        }
-      }
-    }, 300000);
+    saveInterval = $interval(runSave, 30000);
   };
+
+  $scope.$on('$destroy', function() {
+    $scope.stopAutoSave();
+  });
+
+  function runSave() {
+    if($scope.topicData.topicID === undefined)
+    {
+      $scope.doTopic('Draft');
+    } else if($scope.topicData.topicID !== undefined)
+    {
+      $scope.updateTopic($scope.topicData.topicID, 'Draft');
+    }
+  }
 
   $scope.createTopic();
   $scope.autoSave();
