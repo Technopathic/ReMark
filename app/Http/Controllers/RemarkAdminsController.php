@@ -144,6 +144,7 @@ class RemarkAdminsController extends Controller
         $topicType = $request->input('topicType');
         $allowReplies = $request->input('allowReplies');
         $showImage = $request->input('showImage');
+        $topicImgSize = "Large";
 
         if (preg_match('/[A-Za-z]/', $topicTitle) || preg_match('/[0-9]/', $topicTitle))
         {
@@ -222,6 +223,10 @@ class RemarkAdminsController extends Controller
                   $img->crop(500, 300);
                 }
               }
+              if($width < 800)
+              {
+                $topicImgSize = "Small";
+              }
               $img->save($topicThumbnail);
             } else {
               $topicImg = 0;
@@ -235,6 +240,7 @@ class RemarkAdminsController extends Controller
           $topic->topicBody = $topicBody;
           $topic->topicImg = $topicImg;
           $topic->topicThumbnail = $topicThumbnail;
+          $topic->topicImgSize = $topicImgSize;
           $topic->topicAudio = 0;
           $topic->topicVideo = 0;
           $topic->topicChannel = $topicChannel;
@@ -374,6 +380,10 @@ class RemarkAdminsController extends Controller
               $img->crop(500, 300);
             }
           }
+          if($width < 800)
+          {
+            $topicImgSize = "Small";
+          }
           $img->save($topicThumbnail);
         }
         else {
@@ -383,7 +393,7 @@ class RemarkAdminsController extends Controller
 
         $topic->topicImg = $topicImg;
         $topic->topicThumbnail = $topicThumbnail;
-
+        $topic->topicImgSize = $topicImgSize;
         $topic->allowReplies = $allowReplies;
         $topic->showImage = $showImage;
         $topic->topicStatus = $topicStatus;

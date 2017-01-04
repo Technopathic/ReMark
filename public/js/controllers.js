@@ -220,17 +220,17 @@ angular.module('remark.controllers', [])
       if(data == 2)
       {
         $scope.notifyToast('Check your email to Sign In.');
+        $scope.dialogClose();
       }
       else if(data == 0)
       {
-        $scope.notifyToast('Sorry, looks like you were banned.');
+        $scope.notifyToast('Please fill out your email.');
       }
       else if(data == 5)
       {
         $scope.notifyToast('Signing In is not allowed.');
+        $scope.dialogClose();
       }
-
-      $scope.dialogClose();
 
     }).error(function(data) {
       $scope.notifyToast('Login Incorrect.');
@@ -440,6 +440,8 @@ angular.module('remark.controllers', [])
       }
     });
   };
+
+  
 
 }])
 

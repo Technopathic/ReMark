@@ -26,8 +26,8 @@
   </span>
 </div>
 
-<div ng-if="topic.showImage == 1"  class="detail-banner {{imageClass}}">
-  <img ng-if="topic.topicImg != 0" src="{{topic.topicImg}}"/>
+<div ng-if="topic.showImage == 1"  class="detail-banner {{imageClass}}" >
+  <img ng-if="topic.topicImg != 0" src="{{topic.topicImg}}" ng-style="topic.topicImgSize === 'Small' ? { 'max-width':'800px' } : { 'max-width': '100%' }"/>
 </div>
 
 

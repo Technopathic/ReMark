@@ -1179,7 +1179,7 @@ angular.module('remark.dashboard', [])
 
     $scope.stopAutoSave();
 
-    saveInterval = $interval(runSave, 30000);
+    saveInterval = $interval(runSave, 300000);
   };
 
   $scope.$on('$destroy', function() {

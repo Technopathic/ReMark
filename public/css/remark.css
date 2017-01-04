@@ -289,12 +289,15 @@ footer {
 }
 
 .detail-banner {
+  margin:0 auto;
   margin-top:15px;
   margin-bottom:15px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 .detail-banner img  {
-  margin: 0 auto;
   width:100%;
   height:inherit;
 }

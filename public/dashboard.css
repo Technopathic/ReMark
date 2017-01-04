@@ -1,5 +1,5 @@
 .content-h2 {
-  color:#444444;
+  color:#FF69B4;
   font-variant:small-caps;
   padding-top:7px;
 }
@@ -7,8 +7,9 @@
 /*Dashboard*/
 
 .dash-block {
-  background:#FFFFFF;
-  border:1px solid #CCCCCC;
+  background:#333333;
+  border:1px solid #555555;
+  color:#999999;
 }
 
 .dash-block a {
@@ -31,7 +32,7 @@
   font-weight:300;
   color:#AAAAAA;
   font-size:1.5em;
-  border-bottom:1px solid #CCCCCC;
+  border-bottom:1px solid #777777;
 }
 
 .block-content {
@@ -73,7 +74,8 @@
   height:260px;
   resize:none;
   overflow:auto;
-  background:#EEEEEE;
+  background:#222222;
+  color:#888888;
 }
 
 .feedImage {
@@ -121,6 +123,14 @@
 
 /* Dashboard Content */
 
+.admin-channels md-card {
+  background:#333333;
+}
+
+.admin-topics md-card {
+  background:#333333;
+}
+
 .columnTitle {
   padding-left:10px;
   padding-top:10px;
@@ -131,18 +141,6 @@
   overflow-y:auto;
   overflow-x:hidden;
 }
-
-.recordContainer {
-  background:rgba(0, 0, 0, 0.2);
-  width:100%;
-  height:270px;
-  float: left;
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  z-index: 5;
-}
-
 
 .admin-topics .md-headline {
   max-width:350px;
@@ -159,7 +157,7 @@
 
 .dashSheetOptions {
   height:50px;
-  background:#DDDDDD;
+  background:#444444;
   position:fixed;
   right:0;
   bottom:0;
@@ -171,6 +169,9 @@
   overflow-y:auto;
   resize:none;
   border:none;
+  background:#444444;
+  padding:15px;
+  color:#AAAAAA;
 }
 
 .dashSheetContainer textarea {
@@ -178,23 +179,26 @@
   overflow-y:auto;
   resize:none;
   border:none;
-  padding:10px;
+  background:#444444;
+  color:#AAAAAA;
+  padding:15px;
 }
 
 .topicPreview {
   height:90vh !important;
   overflow-y:auto;
-  margin:0 !important;
 }
 
 .topicPreview p {
+  padding:0 !important;
   margin:0 !important;
 }
+
 /* Users */
 
 .user-block {
   width:100%;
-  background:#DDDDDD;
+  background:#333333;
   border-radius:5px;
 }
 
@@ -218,7 +222,7 @@
 /*Options*/
 
 .appContainer {
-  background:#DDDDDD;
+  background:#333333;
   padding:15px;
   border-radius:5px;
   margin-top:10px;
@@ -229,12 +233,13 @@
 }
 
 .menuSelect {
-  border:1px solid #BBBBBB;
+  border:1px solid #555555;
   border-radius:3px;
   padding:5px;
-  background:#FFFFFF;
+  background:#333333;
   margin-top:5px;
   margin-bottom:5px;
+  color:#999999;
 }
 
 .menuSelect label {
@@ -244,7 +249,7 @@
 
 /* Install */
 .Installcontainer {
-  background:#FFFFFF;
+  background:#333333;
   width:960px;
   margin:0 auto;
   box-shadow:0 0 7px 2px rgba(0, 0, 0, 0.2);
@@ -265,7 +270,7 @@
 }
 .Installcontainer section h1 {
   font-variant: small-caps;
-  color:#444444;
+  color:#999999;
   font-size:2em;
   padding-top:20px;
   padding-bottom:5px;

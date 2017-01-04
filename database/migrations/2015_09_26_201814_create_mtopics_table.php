@@ -18,9 +18,8 @@ class CreateMtopicsTable extends Migration
         $table->string('topicTitle', 80);
         $table->longText('topicBody')->nullable();
         $table->longText('topicImg')->nullable();
-        $table->longText('topicAudio')->nullable();
-        $table->longText('topicVideo')->nullable();
         $table->longText('topicThumbnail')->nullable();
+        $table->string('topicImgSize', 12)->default('Large');
         $table->integer('topicChannel')->default(1);
         $table->integer('topicViews')->default(0);
         $table->integer('topicReplies')->default(0);
