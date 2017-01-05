@@ -316,6 +316,7 @@ class RemarkAdminsController extends Controller
         $topicType = $request->input('topicType');
         $allowReplies = $request->input('allowReplies');
         $showImage = $request->input('showImage');
+        $topicImgSize = "Large";
 
         if($topicTitle != NULL)
         {
