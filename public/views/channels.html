@@ -1,12 +1,3 @@
-<div class="custom-container" layout="row" layout-sm="column" layout-xs="column" layout-wrap layout-padding>
-  <div layout="column" flex="100" flex-gt-sm="25" ng-repeat="channel in channels" ng-if="channel.channelTopics != 0">
-    <div class="post-box" ng-style="{'background-image':'url({{channel.channelImg}})'}"  ui-sref="main.channel({ channelSlug: channel.channelSlug })" layout="column">
-      <span flex></span>
-      <div class="post-details" layout="row" layout-align="start end">
-        <h3>{{channel.channelTitle}}</h3>
-      </div>
-    </div>
-  </div>
+<div class="custom-container">
+  <channels box="25" excerpt="false"></channels>
 </div>
-
-<channels box="25" excerpt="false"></channels>

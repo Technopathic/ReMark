@@ -95,6 +95,7 @@ Route::group(['prefix' => 'api', 'middleware' => 'cors'], function()
     Route::get('voteTopic/{id}', 'RemarksController@voteTopic');
     Route::get('getChannels', 'RemarksController@getChannels');
     Route::get('getChannel/{slug}', 'RemarksController@getChannel');
+    Route::get('getArchive', 'RemarksController@getArchive');
 
     Route::get('getUser/{name}', 'RemarksController@getUser');
     Route::post('updateProfile', 'RemarksController@updateProfile');

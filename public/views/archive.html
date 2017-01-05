@@ -1,0 +1,16 @@
+<div class="custom-container">
+  <div ng-repeat="(key, topic) in topics">
+    <h2 class="content-h2">{{key}}</h2>
+    <md-divider></md-divider>
+    <div layout="row" layout-sm="column" layout-xs="column" flex="100" layout-wrap layout-padding>
+      <div class="topicClass" layout="column" flex="100" flex-gt-sm="25" ng-repeat="t in topic" ui-sref="main.detail({ topicSlug: t.topicSlug })">
+        <div class="post-box" ng-style="{'background-image':'url({{t.topicThumbnail}})'}" layout="column">
+          <span flex></span>
+          <div class="post-details" layout="row" layout-align="start end">
+            <h3>{{t.topicTitle}}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

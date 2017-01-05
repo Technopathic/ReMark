@@ -611,4 +611,11 @@ class RemarksController extends Controller
       return Response::json($result);
     }
   }
+
+  public function getArchive()
+  {
+    $topics = Mtopic::where('mtopics.topicStatus', '=', 'Published')->join('mchannels', 'mtopics.topicChannel', '=', 'mchannels.id')->join('users', 'mtopics.topicAuthor', '=', 'users.id')->orderBy('mtopics.created_at', 'DESC')->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicSlug', 'mtopics.topicThumbnail', 'mtopics.created_at')->get()->groupBy(function($item) {return $item->created_at->month.'-'.$item->created_at->year;});
+
+    return Response::json($topics);
+  }
 }

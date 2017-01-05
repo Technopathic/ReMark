@@ -14,6 +14,7 @@
           </md-menu-item>
         </md-menu-content>
       </md-menu>
+      <md-button ui-sref="main.archive" ><md-icon class="material-icons">access_time</md-icon>Archive</md-button>
       <md-button ng-if="authenticated == true" ng-click="askDialog()" ng-href=""><md-icon class="material-icons">help_outline</md-icon> Ask</md-button>
       <md-button ng-if="authenticated != true" ng-click="authDialog($event)" ng-href="">Sign In/ Sign Up</md-button>
       <md-menu ng-if="authenticated == true" md-offset="0 52" md-position-mode="target-right target">
@@ -113,6 +114,12 @@
         <div class="md-list-item-text">
           <md-icon class="material-icons">widgets</md-icon>
           <span class="media-heading">Channels</span>
+        </div>
+      </md-list-item>
+      <md-list-item ui-sref="main.archive" ng-click="closeSheet()">
+        <div class="md-list-item-text">
+          <md-icon class="material-icons">access_time</md-icon>
+          <span class="media-heading">Archive</span>
         </div>
       </md-list-item>
       <md-list-item ng-repeat="page in mainPages" ui-sref="main.details({ topicSlug:page.topicSlug, topicID:page.id })" ng-click="closeSheet()">

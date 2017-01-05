@@ -441,7 +441,7 @@ angular.module('remark.controllers', [])
     });
   };
 
-  
+
 
 }])
 
@@ -619,5 +619,11 @@ angular.module('remark.controllers', [])
   };
 
   $scope.confirmToken();
+
+}])
+
+.controller('ArchiveCtrl', ['$scope', '$rootScope', '$state', '$stateParams', '$http', 'archiveData', function($scope, $rootScope, $state, $stateParams, $http, archiveData) {
+
+  $scope.topics = archiveData.data;
 
 }])

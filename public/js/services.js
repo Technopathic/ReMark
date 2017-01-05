@@ -59,6 +59,14 @@ angular.module('remark.services', [])
 
 }])
 
+.service('archiveStart', ['$http', function($http) {
+
+  this.getArchive = function(query) {
+    return $http.get('api/getArchive');
+  };
+
+}])
+
 .service('dashboardStart', ['$http', '$rootScope', function($http, $rootScope) {
 
   this.getMain = function(query) {

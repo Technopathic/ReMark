@@ -99,6 +99,17 @@ angular.module('remark', ['ui.router', 'angular-loading-bar', 'angularMoment', '
     }
   })
 
+  .state('main.archive', {
+    url: '/archive',
+    templateUrl: 'views/archive.html',
+    controller: 'ArchiveCtrl',
+    resolve: {
+      archiveData: ['archiveStart', function(archiveStart) {
+          return archiveStart.getArchive();
+      }]
+    }
+  })
+
   .state('main.confirm', {
     url: '/confirm/:token',
     templateUrl: 'views/confirm.html',
