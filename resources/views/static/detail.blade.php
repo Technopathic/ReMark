@@ -107,7 +107,7 @@
           <br/>
           <div class="topicDate">{{ date('D Y/m/d H:i T', strtotime($topic->created_at)) }}</div>
         </div>
-        <div class="topicImg"><img src="../{!! $topic->topicThumbnail !!}" /></div>
+        <div class="topicImg"><img src="/{!! $topic->topicImg !!}" /></div>
         <div class="topicDesc">{!! Markdown::convertToHtml(html_entity_decode($topic->topicBody)) !!}</div>
       </div>
     </div>

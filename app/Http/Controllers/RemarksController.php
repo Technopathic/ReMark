@@ -44,21 +44,7 @@ class RemarksController extends Controller
 
     public function index()
     {
-      if(Crawler::isCrawler()) {
-        $options = Option::select('website', 'baseurl', 'siteLogo', 'homeBanner', 'aboutWebsite', 'allowAsk', 'homePage')->first();
-        $pages = Mtopic::where('pageMenu', '=', 1)->orderBy('id', 'ASC')->select('id', 'topicTitle', 'topicSlug')->get();
-        $channels = Mchannel::select('id', 'channelTitle', 'channelSlug')->get();
-        $topics = Mtopic::where('mtopics.topicStatus', '=', 'Published')->join('mchannels', 'mtopics.topicChannel', '=', 'mchannels.id')->join('users', 'mtopics.topicAuthor', '=', 'users.id')->orderBy('mtopics.created_at', 'DESC')->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicSlug', 'mtopics.topicBody', 'mtopics.topicThumbnail', 'mtopics.created_at', 'mtopics.topicReplies', 'mtopics.topicViews', 'mtopics.topicChannel', 'mchannels.channelTitle', 'mtopics.topicType', 'users.displayName', 'users.name', 'users.avatar')->paginate(12);
-
-        return view('static.index')
-          ->with('options', $options)
-          ->with('pages', $pages)
-          ->with('channels', $channels)
-          ->with('topics', $topics);
-
-      } else {
-        return File::get('index.html');
-      }
+      return File::get('index.html');
     }
 
     public function staticIndex()
@@ -82,14 +68,14 @@ class RemarksController extends Controller
         $channel = Mchannel::where('channelSlug', '=', $slug)->select('id', 'channelTitle', 'channelSlug', 'channelDesc', 'channelTopics')->first();
         $topics = Mtopic::where('topicChannel', '=', $channel->id)->where('mtopics.topicStatus', '=', 'Published')->join('mchannels', 'mtopics.topicChannel', '=', 'mchannels.id')->join('users', 'mtopics.topicAuthor', '=', 'users.id')->orderBy('mtopics.created_at', 'DESC')->select('mtopics.id', 'mtopics.topicTitle', 'mtopics.topicSlug', 'mtopics.topicBody', 'mtopics.topicThumbnail', 'mtopics.created_at', 'mtopics.topicReplies', 'mtopics.topicViews', 'mtopics.topicChannel', 'mchannels.channelTitle', 'mtopics.topicType', 'users.displayName', 'users.name', 'users.avatar')->paginate(12);
 
-      return view('static.channel')
-        ->with('options', $options)
-        ->with('channel', $channel)
-        ->with('topics', $topics);
-
-      } else {
-        return File::get('index.html');
-      }
+        return view('static.channel')
+          ->with('options', $options)
+          ->with('channel', $channel)
+          ->with('topics', $topics);
+        }
+        else {
+          return File::get('index.html');
+        }
     }
 
     public function staticDetail($slug)
@@ -109,8 +95,8 @@ class RemarksController extends Controller
           ->with('metaImage', $metaImage)
           ->with('metaDesc', $metaDesc)
           ->with('topic', $topic);
-
-      } else {
+      }
+      else {
         return File::get('index.html');
       }
     }
